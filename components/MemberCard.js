@@ -3,6 +3,7 @@ import { Mail, Globe, ArrowRight } from 'lucide-react';
 import { Github, Linkedin } from './BrandIcons';
 import Avatar from './Avatar';
 import { cn } from './Badge';
+import { captureEvent } from '../utils/telemetryClient';
 
 export default function MemberCard({ member, showProjectCount, projectCount }) {
   const { id, name, contribution, shortBio, avatar, github, email, social } = member;
@@ -10,6 +11,7 @@ export default function MemberCard({ member, showProjectCount, projectCount }) {
   return (
     <Link 
       href={`/members/${id}`}
+      onClick={() => captureEvent('member_click', { memberId: id, memberName: name, source: 'grid' })}
       className={cn(
         "group relative flex flex-col bg-white dark:bg-slate-900 rounded-3xl p-8 transition-all duration-500",
         "border border-slate-200 dark:border-slate-800 hover:border-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/5 hover:-translate-y-2"

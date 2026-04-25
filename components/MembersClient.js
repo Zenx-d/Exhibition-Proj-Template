@@ -6,10 +6,35 @@ import MemberGrid from './MemberGrid';
 import { useMemberFilters } from '../hooks/useMemberFilters';
 import configData from '../data/config.json';
 import { cn } from './Badge';
+import { useEffect, useRef } from 'react';
+import { captureEvent, captureSearch } from '../utils/telemetryClient';
 
 export default function MembersClient({ initialMembers, projectCountMap }) {
   const projectMatcher = (memberId) => projectCountMap[memberId] > 0;
   const { filters, setters, filteredMembers, uniqueContributions } = useMemberFilters(initialMembers, projectMatcher);
+  const searchTimeoutRef = useRef(null);
+
+  // Track Filters and Search
+  useEffect(() => {
+    // 1. Filter Tracking
+    captureEvent('filter_used', { 
+      filters: { 
+        contribution: filters.contribution, 
+        hasProjects: filters.hasProjects 
+      }, 
+      resultCount: filteredMembers.length 
+    });
+  }, [filters.contribution, filters.hasProjects, filteredMembers.length]);
+
+  useEffect(() => {
+    // 2. Search Tracking (Debounced)
+    if (filters.search) {
+      if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+      searchTimeoutRef.current = setTimeout(() => {
+        captureSearch(filters.search, filteredMembers.length);
+      }, 1500); // Wait for 1.5s of typing before tracking
+    }
+  }, [filters.search, filteredMembers.length]);
 
   return (
     <div className="flex flex-col gap-12">

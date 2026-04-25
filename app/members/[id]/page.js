@@ -7,6 +7,7 @@ import { getProjectsForMember } from '../../../utils/memberProjectMatcher';
 import MarkdownRenderer from '../../../components/MarkdownRenderer';
 import ProjectCard from '../../../components/ProjectCard';
 import Avatar from '../../../components/Avatar';
+import MemberViewTracker from '../../../components/MemberViewTracker';
 
 export async function generateStaticParams() {
   const members = getAllActiveMembers();
@@ -37,6 +38,7 @@ export default async function MemberPage({ params }) {
 
   return (
     <div className="flex flex-col gap-12">
+      <MemberViewTracker memberId={member.id} memberName={member.name} />
       {/* Normalized Header Section */}
       <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 md:p-12 border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden relative">
         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />

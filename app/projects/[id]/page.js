@@ -7,6 +7,7 @@ import { getMembersForProject } from '../../../utils/memberProjectMatcher';
 import MarkdownRenderer from '../../../components/MarkdownRenderer';
 import Avatar from '../../../components/Avatar';
 import Badge from '../../../components/Badge';
+import ProjectViewTracker from '../../../components/ProjectViewTracker';
 
 export async function generateStaticParams() {
   const projects = getAllProjects();
@@ -39,6 +40,7 @@ export default async function ProjectPage({ params }) {
 
   return (
     <div className="flex flex-col gap-12">
+      <ProjectViewTracker projectId={project.id} projectTitle={project.title} />
       {/* Normalized Header Section */}
       <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm relative">
         <div className="relative aspect-[21/9] md:aspect-[21/7] w-full">

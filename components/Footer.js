@@ -1,9 +1,28 @@
-import Link from 'next/link';
-import { Github, Twitter, Linkedin, Mail, MapPin, ExternalLink } from 'lucide-react';
-import configData from '../data/config.json';
+'use client';
+
+import { useState } from 'react';
+import { subscribeUser } from '../lib/telemetry';
+import { captureEvent } from '../utils/telemetryClient';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState('idle'); // idle, loading, success, error
+
+  const handleSubscribe = async () => {
+    if (!email || !email.includes('@')) return;
+    setStatus('loading');
+    
+    const result = await subscribeUser(email);
+    
+    if (result.success) {
+      setStatus('success');
+      setEmail('');
+      captureEvent('newsletter_signup', { status: 'success' });
+    } else {
+      setStatus('error');
+    }
+  };
 
   return (
     <footer className="bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-900 pt-24 pb-12 transition-colors">
@@ -82,13 +101,21 @@ export default function Footer() {
             <div className="relative group">
               <input 
                 type="email" 
-                placeholder="Enter email..."
-                className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-600/10 focus:border-indigo-600 transition-all font-bold text-sm"
+                placeholder={status === 'success' ? 'Joined!' : 'Enter email...'}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={status === 'loading' || status === 'success'}
+                className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-600/10 focus:border-indigo-600 transition-all font-bold text-sm disabled:opacity-50"
               />
-              <button className="absolute right-2 top-2 bottom-2 px-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-black text-xs uppercase tracking-widest hover:scale-95 transition-transform">
-                Join
+              <button 
+                onClick={handleSubscribe}
+                disabled={status === 'loading' || status === 'success'}
+                className="absolute right-2 top-2 bottom-2 px-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-black text-xs uppercase tracking-widest hover:scale-95 transition-transform disabled:scale-100"
+              >
+                {status === 'loading' ? '...' : status === 'success' ? '✓' : 'Join'}
               </button>
             </div>
+            {status === 'error' && <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest">Connection Error</p>}
           </div>
         </div>
 
