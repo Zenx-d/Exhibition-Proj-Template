@@ -1,0 +1,18 @@
+{
+  "id": "zen-01",
+  "state": "active",
+  "name": "Sincere Bhattarai",
+  "contribution": "AI Backend Developer & Full-Stack Builder",
+  "shortBio": "Self-taught developer building anime platforms, APIs, and AI-driven backend systems with a focus on performance, scalability, and clean architecture.",
+  "avatar": "/avatars/zen-01.png",
+  "featured": true,
+  "order": 1,
+  "github": "https://github.com/VoidX3D",
+  "phone": "+977 9765950750",
+  "email": "playzspreston2@gmail.com",
+  "social": {
+    "linkedin": "",
+    "twitter": "https://x.com/VortexVoidX3D?s=09",
+    "website": "https://voidx3d.netlify.app"
+  }
+}

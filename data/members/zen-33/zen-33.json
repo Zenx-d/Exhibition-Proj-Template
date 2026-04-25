@@ -1,0 +1,18 @@
+{
+  "id": "zen-33",
+  "state": "hidden",
+  "name": "Member 33",
+  "contribution": "Exhibition Member",
+  "shortBio": "This is a placeholder biography for the member. Edit this file to add details.",
+  "avatar": "",
+  "featured": false,
+  "order": 33,
+  "github": "",
+  "phone": "",
+  "email": "",
+  "social": {
+    "linkedin": "",
+    "twitter": "",
+    "website": ""
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "siteTitle": "Zen Exhibition",
+  "hero": {
+    "title": "Zen Exhibition Platform",
+    "subtitle": "Discover the next generation of digital creators and technical pioneers in our 2026 showcase.",
+    "ctaText": "Meet the Creators",
+    "ctaLink": "/members"
+  },
+  "stats": {
+    "totalProjects": 12,
+    "totalMembers": 50,
+    "totalSpent": "$25,000"
+  },
+  "navbar": {
+    "items": [
+      { "name": "Exhibition", "href": "/" },
+      { "name": "Team", "href": "/members" },
+      { "name": "The Lab", "href": "/projects" }
+    ]
+  },
+  "features": {
+    "showProjectCountOnMemberCards": true,
+    "enableGlowEffects": true
+  }
+}

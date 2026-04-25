@@ -1,0 +1,24 @@
+{
+  "projects": [
+    {
+      "id": "project-01",
+      "title": "Zen Exhibition",
+      "shortDescription": "The 2026 exhibition platform for Zen Exhibition",
+      "members": [
+        "zen-01",
+        "zen-02"
+      ],
+      "techStack": [
+        "Next.js",
+        "React",
+        "Tailwind"
+      ],
+      "githubRepo": "",
+      "demoUrl": "",
+      "featured": true,
+      "year": 2026,
+      "thumbnail": "/content/images/zen-template-screenshot.png",
+      "markdownFile": "project-01.md"
+    }
+  ]
+}
