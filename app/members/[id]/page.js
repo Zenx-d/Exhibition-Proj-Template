@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
 import { ArrowLeft, Mail, Phone, Globe } from 'lucide-react';
 import { Github, Linkedin, Twitter } from '../../../components/BrandIcons';
 import { getMemberById, getMemberMarkdownById, getAllActiveMembers } from '../../../utils/dataLoader';
@@ -8,6 +7,7 @@ import MarkdownRenderer from '../../../components/MarkdownRenderer';
 import ProjectCard from '../../../components/ProjectCard';
 import Avatar from '../../../components/Avatar';
 import MemberViewTracker from '../../../components/MemberViewTracker';
+import SmartLink from '../../../components/SmartLink';
 
 export async function generateStaticParams() {
   const members = getAllActiveMembers();
@@ -39,6 +39,7 @@ export default async function MemberPage({ params }) {
   return (
     <div className="flex flex-col gap-12">
       <MemberViewTracker memberId={member.id} memberName={member.name} />
+      
       {/* Normalized Header Section */}
       <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 md:p-12 border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden relative">
         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
@@ -47,9 +48,9 @@ export default async function MemberPage({ params }) {
           <Avatar src={member.avatar} alt={member.name} size="xl" className="w-32 h-32 md:w-48 md:h-48 ring-8 ring-slate-50 dark:ring-slate-800/50 shadow-2xl" />
           
           <div className="flex-1 text-center md:text-left">
-            <Link href="/members" className="inline-flex items-center gap-1 text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-widest text-[10px] mb-4">
+            <SmartLink href="/members" className="inline-flex items-center gap-1 text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-widest text-[10px] mb-4">
               <ArrowLeft size={12} /> Back to Team
-            </Link>
+            </SmartLink>
             <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-slate-900 dark:text-white mb-2 leading-none">{member.name}</h1>
             <p className="text-xl md:text-2xl text-slate-500 dark:text-slate-400 font-bold mb-6">{member.contribution}</p>
             

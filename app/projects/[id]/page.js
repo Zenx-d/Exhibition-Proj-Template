@@ -1,13 +1,13 @@
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
 import { ArrowLeft, ExternalLink, Calendar } from 'lucide-react';
 import { Github } from '../../../components/BrandIcons';
-import { getAllProjects, getProjectMarkdownById } from '../../../utils/dataLoader';
+import { getAllProjects, getProjectMarkdownById, getProjectById } from '../../../utils/dataLoader';
 import { getMembersForProject } from '../../../utils/memberProjectMatcher';
 import MarkdownRenderer from '../../../components/MarkdownRenderer';
 import Avatar from '../../../components/Avatar';
 import Badge from '../../../components/Badge';
 import ProjectViewTracker from '../../../components/ProjectViewTracker';
+import SmartLink from '../../../components/SmartLink';
 
 export async function generateStaticParams() {
   const projects = getAllProjects();
@@ -18,8 +18,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }) {
   const { id } = await params;
-  const projects = getAllProjects();
-  const project = projects.find(p => p.id === id);
+  const project = getProjectById(id);
   if (!project) return { title: 'Project Not Found' };
   
   return {
@@ -30,8 +29,7 @@ export async function generateMetadata({ params }) {
 
 export default async function ProjectPage({ params }) {
   const { id } = await params;
-  const projects = getAllProjects();
-  const project = projects.find(p => p.id === id);
+  const project = getProjectById(id);
   
   if (!project) notFound();
 
@@ -41,6 +39,7 @@ export default async function ProjectPage({ params }) {
   return (
     <div className="flex flex-col gap-12">
       <ProjectViewTracker projectId={project.id} projectTitle={project.title} />
+      
       {/* Normalized Header Section */}
       <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm relative">
         <div className="relative aspect-[21/9] md:aspect-[21/7] w-full">
@@ -51,9 +50,9 @@ export default async function ProjectPage({ params }) {
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent" />
           <div className="absolute bottom-8 left-8 right-8">
-            <Link href="/projects" className="inline-flex items-center gap-1 text-indigo-400 font-bold uppercase tracking-widest text-[10px] mb-4">
+            <SmartLink href="/projects" className="inline-flex items-center gap-1 text-indigo-400 font-bold uppercase tracking-widest text-[10px] mb-4">
               <ArrowLeft size={12} /> Back to Projects
-            </Link>
+            </SmartLink>
             <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-white mb-4 leading-none">{project.title}</h1>
             <div className="flex flex-wrap items-center gap-4">
               {project.year && (
@@ -110,13 +109,13 @@ export default async function ProjectPage({ params }) {
               <h2 className="text-2xl font-black tracking-tighter mb-6 border-b-2 border-slate-100 dark:border-slate-800 pb-2 inline-block">The Team</h2>
               <div className="flex flex-col gap-4">
                 {teamMembers.map(member => (
-                  <Link key={member.id} href={`/members/${member.id}`} className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 hover:border-indigo-500 transition-all group">
+                  <SmartLink key={member.id} href={`/members/${member.id}`} className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 hover:border-indigo-500 transition-all group">
                     <Avatar src={member.avatar} alt={member.name} size="md" className="w-12 h-12" />
                     <div>
                       <h4 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-tight">{member.name}</h4>
                       <p className="text-xs text-slate-500 font-medium">{member.contribution}</p>
                     </div>
-                  </Link>
+                  </SmartLink>
                 ))}
               </div>
             </div>
