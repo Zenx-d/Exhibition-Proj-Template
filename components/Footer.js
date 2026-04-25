@@ -5,6 +5,8 @@ import { subscribeUser } from '../lib/telemetry';
 import { captureEvent } from '../utils/telemetryClient';
 import SmartLink from './SmartLink';
 import Link from 'next/link';
+import { Github, Twitter, Linkedin, Mail, MapPin, ExternalLink } from 'lucide-react';
+import configData from '../data/config.json';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -46,7 +48,7 @@ export default function Footer() {
               Pushing the boundaries of digital expression through code, design, and collaborative innovation.
             </p>
             <div className="flex items-center gap-4">
-              <a href="https://github.com/Zenx-d" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-400 hover:bg-indigo-600 hover:text-white transition-all shadow-sm">
+              <a href="https://github.com/Zenx-d/Exhibition-Proj-Template" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-400 hover:bg-indigo-600 hover:text-white transition-all shadow-sm">
                 <Github size={20} />
               </a>
               <a href="#" className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-400 hover:bg-indigo-600 hover:text-white transition-all shadow-sm">

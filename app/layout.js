@@ -8,6 +8,8 @@ import { LoadingProvider } from '../components/LoadingProvider';
 import TelemetryProvider from '../components/TelemetryProvider';
 import CookieConsent from '../components/CookieConsent';
 import configData from '../data/config.json';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -55,6 +57,8 @@ export default function RootLayout({ children }) {
         </main>
           <Footer />
           <CookieConsent />
+          <Analytics />
+          <SpeedInsights />
         </LoadingProvider>
       </body>
     </html>
