@@ -19,30 +19,6 @@ Below is a live counter built using raw HTML and dynamic JavaScript directly ins
   </div>
 </div>
 
-<script>
-  (function() {
-    let count = 0;
-    const valueDisplay = document.getElementById('counter-value');
-    const incBtn = document.getElementById('increment-btn');
-    const resetBtn = document.getElementById('reset-btn');
-
-    if (incBtn && valueDisplay) {
-      incBtn.onclick = () => {
-        count++;
-        valueDisplay.textContent = count;
-        console.log('Markdown JS: Count is now', count);
-      };
-    }
-
-    if (resetBtn && valueDisplay) {
-      resetBtn.onclick = () => {
-        count = 0;
-        valueDisplay.textContent = count;
-      };
-    }
-  })();
-</script>
-
 ---
 
 ## 🛠️ Technical Details
@@ -50,9 +26,9 @@ Below is a live counter built using raw HTML and dynamic JavaScript directly ins
 The Markdown engine now performs the following steps:
 1.  **Parse:** Converts Markdown to HTML using `react-markdown`.
 2.  **Render:** Injects raw HTML via `rehype-raw`.
-3.  **Execute:** A `useEffect` hook scans the rendered content for `<script>` tags, re-instantiates them, and triggers their execution in the client-side DOM.
+3.  **Execute:** A `useEffect` hook scans the rendered content for scripts.
 
-\`\`\`javascript
+```javascript
 // You can also still have beautiful code blocks
 console.log("Ready for action!");
-\`\`\`
+```
