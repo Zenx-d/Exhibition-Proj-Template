@@ -1,22 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLoading } from './LoadingProvider';
 
 export default function LoadingOverlay() {
-  const pathname = usePathname();
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    const handleStart = () => setIsLoading(true);
-    const handleComplete = () => {
-      setTimeout(() => setIsLoading(false), 400);
-    };
-
-    handleStart();
-    handleComplete();
-  }, [pathname]);
+  const { isLoading } = useLoading();
 
   return (
     <AnimatePresence>
