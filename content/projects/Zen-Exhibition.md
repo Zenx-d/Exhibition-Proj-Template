@@ -19,6 +19,30 @@ Below is a live counter built using raw HTML and dynamic JavaScript directly ins
   </div>
 </div>
 
+<script>
+  (function() {
+    let count = 0;
+    const valueDisplay = document.getElementById('counter-value');
+    const incBtn = document.getElementById('increment-btn');
+    const resetBtn = document.getElementById('reset-btn');
+
+    if (incBtn && valueDisplay) {
+      incBtn.onclick = () => {
+        count++;
+        valueDisplay.textContent = count;
+        console.log('Markdown JS: Count is now', count);
+      };
+    }
+
+    if (resetBtn && valueDisplay) {
+      resetBtn.onclick = () => {
+        count = 0;
+        valueDisplay.textContent = count;
+      };
+    }
+  })();
+</script>
+
 ---
 
 ## 🛠️ Technical Details
