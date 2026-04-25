@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { subscribeUser } from '../lib/telemetry';
 import { captureEvent } from '../utils/telemetryClient';
+import SmartLink from './SmartLink';
+import Link from 'next/link';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -125,8 +127,8 @@ export default function Footer() {
             © {currentYear} {configData.siteTitle}. All Rights Reserved.
           </p>
           <div className="flex items-center gap-8">
-            <a href="#" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 transition-colors">Privacy Policy</a>
-            <a href="#" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 transition-colors">Terms of Service</a>
+            <SmartLink href="/privacy" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 transition-colors">Privacy Policy</SmartLink>
+            <SmartLink href="/terms" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 transition-colors">Terms of Service</SmartLink>
           </div>
         </div>
       </div>

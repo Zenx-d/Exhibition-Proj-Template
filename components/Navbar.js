@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import SmartLink from './SmartLink';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
@@ -30,7 +31,7 @@ export default function Navbar() {
       isScrolled ? "bg-white/90 dark:bg-slate-950/90 backdrop-blur-2xl border-b border-slate-200 dark:border-slate-800 py-6 shadow-md" : "bg-transparent py-10"
     )}>
       <div className="max-w-[1440px] mx-auto flex items-center justify-between px-8 md:px-16">
-        <Link href="/" className="flex items-center gap-4 group">
+        <SmartLink href="/" className="flex items-center gap-4 group">
           <img 
             src="/logo.svg" 
             alt="Zen Logo" 
@@ -39,14 +40,14 @@ export default function Navbar() {
           <span className="text-3xl font-black tracking-tighter text-slate-900 dark:text-white font-display">
             {configData.siteTitle}
           </span>
-        </Link>
+        </SmartLink>
 
         {/* Desktop Nav - Larger Typography */}
         <nav className="hidden md:flex items-center gap-10">
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
             return (
-              <Link 
+              <SmartLink 
                 key={item.href} 
                 href={item.href} 
                 className={cn(
@@ -55,7 +56,7 @@ export default function Navbar() {
                 )}
               >
                 {item.name}
-              </Link>
+              </SmartLink>
             );
           })}
           <div className="w-px h-10 bg-slate-200 dark:bg-slate-800 mx-4" />
@@ -92,14 +93,14 @@ export default function Navbar() {
             
             <nav className="flex flex-col gap-12 text-center">
               {navItems.map((item) => (
-                <Link 
+                <SmartLink 
                   key={item.href} 
                   href={item.href} 
                   onClick={() => setMobileMenuOpen(false)}
                   className="text-6xl font-black tracking-tighter text-slate-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                 >
                   {item.name}
-                </Link>
+                </SmartLink>
               ))}
             </nav>
           </motion.div>

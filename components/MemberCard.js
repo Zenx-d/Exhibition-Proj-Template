@@ -1,15 +1,17 @@
-import Link from 'next/link';
+'use client';
+
 import { Mail, Globe, ArrowRight } from 'lucide-react';
 import { Github, Linkedin } from './BrandIcons';
 import Avatar from './Avatar';
 import { cn } from './Badge';
 import { captureEvent } from '../utils/telemetryClient';
+import SmartLink from './SmartLink';
 
 export default function MemberCard({ member, showProjectCount, projectCount }) {
   const { id, name, contribution, shortBio, avatar, github, email, social } = member;
 
   return (
-    <Link 
+    <SmartLink 
       href={`/members/${id}`}
       onClick={() => captureEvent('member_click', { memberId: id, memberName: name, source: 'grid' })}
       className={cn(
@@ -54,6 +56,6 @@ export default function MemberCard({ member, showProjectCount, projectCount }) {
           Profile <ArrowRight size={14} />
         </div>
       </div>
-    </Link>
+    </SmartLink>
   );
 }
