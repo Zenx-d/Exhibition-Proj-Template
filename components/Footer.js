@@ -34,7 +34,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-24">
           {/* Brand Section */}
           <div className="flex flex-col gap-8">
-            <Link href="/" className="flex items-center gap-3 group">
+            <SmartLink href="/" className="flex items-center gap-3 group">
               <img 
                 src="/logo.svg" 
                 alt="Zen Logo" 
@@ -43,7 +43,7 @@ export default function Footer() {
               <span className="text-2xl font-black tracking-tighter text-slate-900 dark:text-white font-display">
                 {configData.siteTitle}
               </span>
-            </Link>
+            </SmartLink>
             <p className="text-lg text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
               Pushing the boundaries of digital expression through code, design, and collaborative innovation.
             </p>
