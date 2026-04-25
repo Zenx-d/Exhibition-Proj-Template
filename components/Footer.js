@@ -83,7 +83,7 @@ export default function Footer() {
                 </div>
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Email</p>
-                  <p className="text-lg font-bold text-slate-700 dark:text-white">generalexhibition@proton.me</p>
+                  <p className="text-lg font-bold text-slate-700 dark:text-white">{configData.contact?.email || 'generalexhibition@proton.me'}</p>
                 </div>
               </div>
               <div className="flex items-start gap-4 group">
@@ -92,7 +92,7 @@ export default function Footer() {
                 </div>
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Location</p>
-                  <p className="text-lg font-bold text-slate-700 dark:text-white">Silicon Valley, CA</p>
+                  <p className="text-lg font-bold text-slate-700 dark:text-white">{configData.contact?.location || 'Silicon Valley, CA'}</p>
                 </div>
               </div>
             </div>

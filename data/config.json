@@ -7,15 +7,28 @@
     "ctaLink": "/members"
   },
   "stats": {
-    "totalProjects": 12,
-    "totalMembers": 50,
-    "totalSpent": "$25,000"
+    "totalProjects": 1,
+    "totalMembers": 7,
+    "totalSpent": "$5,000"
+  },
+  "contact": {
+    "email": "generalexhibition@proton.me",
+    "location": "Pokhara -1, Bagar Nepal"
   },
   "navbar": {
     "items": [
-      { "name": "Exhibition", "href": "/" },
-      { "name": "Team", "href": "/members" },
-      { "name": "The Lab", "href": "/projects" }
+      {
+        "name": "Exhibition",
+        "href": "/"
+      },
+      {
+        "name": "Team",
+        "href": "/members"
+      },
+      {
+        "name": "The Lab",
+        "href": "/projects"
+      }
     ]
   },
   "features": {
