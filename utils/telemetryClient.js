@@ -32,6 +32,9 @@ function setCookie(name, value, days) {
  * Capture and send telemetry data if consent is given.
  */
 export async function captureEvent(eventType, eventData = {}) {
+  // SSR Safety
+  if (typeof window === 'undefined') return;
+
   // Check Consent
   if (getCookie('cookie-consent') !== 'true') return;
 
