@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Zen GIF Player</title>
+    <style>
+        body { margin: 0; background: transparent; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        .container { position: relative; width: 100%; height: 100%; border-radius: 32px; overflow: hidden; border: 4px solid #4f46e5; background: #0f172a; cursor: pointer; }
+        img { width: 100%; height: 100%; object-fit: cover; }
+        .overlay { position: absolute; inset: 0; background: rgba(15, 23, 42, 0.6); display: flex; align-items: center; justify-content: center; transition: opacity 0.3s; }
+        .play-btn { width: 80px; height: 80px; background: #4f46e5; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 32px; box-shadow: 0 0 30px rgba(79,70,229,0.8); }
+        .container.playing .overlay { opacity: 0; pointer-events: none; }
+    </style>
+</head>
+<body>
+    <div class="container" id="player" onclick="toggle()">
+        <img id="gif" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJ6eGdtcnZ6eGdtcnZ6eGdtcnZ6eGdtcnZ6eGdtcnZ6eGdtcnZ6eGdtJnBvcz1jJmpxPXNlYXJjaCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKMGpxxS0zYqP8Q/giphy.gif" alt="Zen Animation">
+        <div class="overlay" id="overlay">
+            <div class="play-btn">▶</div>
+        </div>
+    </div>
+
+    <script>
+        const p = document.getElementById('player');
+        const g = document.getElementById('gif');
+        const staticSrc = g.src;
+        function toggle() {
+            p.classList.toggle('playing');
+        }
+    </script>
+</body>
+</html>
