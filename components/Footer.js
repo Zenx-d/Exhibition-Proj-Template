@@ -77,10 +77,10 @@ export default function Footer() {
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-16">
         
         {/* Main Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-16 mb-16 md:mb-24">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-12 lg:gap-16 mb-16 md:mb-24">
           
-          {/* Brand — full width on mobile */}
-          <div className="col-span-2 lg:col-span-1 flex flex-col gap-6">
+          {/* Brand */}
+          <div className="md:col-span-12 lg:col-span-4 flex flex-col gap-6">
             <SmartLink href="/" className="flex items-center gap-3 group w-fit">
               <img
                 src="/logo.svg"
@@ -111,7 +111,7 @@ export default function Footer() {
           </div>
 
           {/* Navigation */}
-          <div className="flex flex-col gap-5 md:gap-8">
+          <div className="md:col-span-4 lg:col-span-2 flex flex-col gap-5 md:gap-8">
             <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500">Navigation</h4>
             <nav className="flex flex-col gap-3 md:gap-4">
               {configData.navbar.items.map((item) => (
@@ -125,7 +125,7 @@ export default function Footer() {
           </div>
 
           {/* Contact */}
-          <div className="flex flex-col gap-5 md:gap-8">
+          <div className="md:col-span-8 lg:col-span-3 flex flex-col gap-5 md:gap-8">
             <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500">Contact</h4>
             <div className="flex flex-col gap-4 md:gap-6">
               <div className="flex items-start gap-3 group">
@@ -134,9 +134,9 @@ export default function Footer() {
                 </div>
                 <div className="min-w-0">
                   <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Email</p>
-                  <p className="text-sm md:text-base font-bold text-slate-700 dark:text-white break-all">
+                  <a href={`mailto:${configData.contact?.email || 'generalexhibition@proton.me'}`} className="text-sm md:text-base font-bold text-slate-700 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors whitespace-nowrap overflow-hidden text-ellipsis block">
                     {configData.contact?.email || 'generalexhibition@proton.me'}
-                  </p>
+                  </a>
                 </div>
               </div>
               <div className="flex items-start gap-3 group">
@@ -153,8 +153,8 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Newsletter — full width on mobile */}
-          <div className="col-span-2 lg:col-span-1 flex flex-col gap-5 md:gap-8">
+          {/* Newsletter */}
+          <div className="md:col-span-12 lg:col-span-3 flex flex-col gap-5 md:gap-8">
             <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500">Newsletter</h4>
             <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 font-medium">
               Get monthly updates on our latest technical experiments.
