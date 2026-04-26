@@ -1,18 +1,18 @@
 {
   "id": "zen-03",
   "state": "active",
-  "name": "Member 03",
-  "contribution": "Exhibition Member",
-  "shortBio": "This is a placeholder biography for the member. Edit this file to add details.",
+  "name": "The Absolute Madman",
+  "contribution": "Markdown Destroyer & Limit Pusher",
+  "shortBio": "This member exists to test the absolute limits of what can be embedded in a markdown file. Games? Yes. 3D? Yes. Madness? Absolutely.",
   "avatar": "",
-  "featured": false,
+  "featured": true,
   "order": 3,
-  "github": "",
-  "phone": "",
-  "email": "",
+  "github": "https://github.com/madman",
+  "phone": "+1 555 666 1337",
+  "email": "madman@zenexhibition.com",
   "social": {
     "linkedin": "",
-    "twitter": "",
-    "website": ""
+    "twitter": "https://twitter.com/madman",
+    "website": "https://stacked-markdown.com"
   }
 }
