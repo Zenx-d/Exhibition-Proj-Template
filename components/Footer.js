@@ -14,7 +14,7 @@ export default function Footer() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState('idle'); // idle, loading, success, error
   const [emailError, setEmailError] = useState(null);
-  const [emailSuggestion, setEmailSuggestion] = useState(null);
+  const [emailSuggestion, setEmailSuggestion] = useState(null); // { text: string, email: string }
 
   const handleEmailChange = useCallback((val) => {
     setEmail(val);
@@ -22,7 +22,13 @@ export default function Footer() {
     if (val.length > 5) {
       const result = validateEmail(val);
       setEmailError(result.error);
-      setEmailSuggestion(result.suggestion);
+      if (result.suggestion) {
+        // Extract the corrected email from the suggestion text
+        const match = result.suggestion.match(/Did you mean (.+?)[?]/);
+        setEmailSuggestion(match ? { text: result.suggestion, email: match[1] } : null);
+      } else {
+        setEmailSuggestion(null);
+      }
     } else {
       setEmailError(null);
       setEmailSuggestion(null);
@@ -33,13 +39,12 @@ export default function Footer() {
     const result = validateEmail(email);
     if (!result.valid) {
       setEmailError(result.error);
-      setEmailSuggestion(result.suggestion);
       return;
     }
     setStatus('loading');
     setEmailError(null);
     setEmailSuggestion(null);
-    const res = await subscribeUser(email);
+    const res = await subscribeUser(email, { sourcePath: window.location.pathname });
     if (res.success) {
       setStatus('success');
       setEmail('');
@@ -172,10 +177,10 @@ export default function Footer() {
               )}
               {emailSuggestion && (
                 <button
-                  onClick={() => { handleEmailChange(emailSuggestion.replace('Did you mean ', '').replace('?', '')); }}
+                  onClick={() => handleEmailChange(emailSuggestion.email)}
                   className="text-left text-[10px] text-indigo-500 font-bold hover:text-indigo-700 transition-colors"
                 >
-                  💡 {emailSuggestion}
+                  💡 {emailSuggestion.text}
                 </button>
               )}
             </div>

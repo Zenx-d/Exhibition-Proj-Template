@@ -1,75 +1,103 @@
-# 🚀 Zen Exhibition - Contributor Guide
+# 🚀 Zen Exhibition - Full Contributor & Admin Guide
 
-Welcome to the Zen Exhibition Platform. This guide explains how to add new members, projects, and manage content.
-
----
-
-## 👥 Adding a New Member
-
-Members are stored in individual folders under `data/members/`.
-
-1. **Create Folder**: Create a new folder in `data/members/` with a unique ID (e.g., `john-doe`).
-2. **Configuration**: Create a `john-doe.json` file inside that folder.
-   ```json
-   {
-     "id": "john-doe",
-     "name": "John Doe",
-     "contribution": "Full Stack Developer",
-     "state": "active",
-     "avatar": "/content/images/avatars/john.png",
-     "github": "https://github.com/johndoe",
-     "shortBio": "Building the future of the web.",
-     "order": 10
-   }
-   ```
-3. **Markdown Profile**: Create a `john-doe.md` file in the same folder for the long-form profile story.
-4. **Register**: Add the ID to the `members` array in `data/members.json`.
+This guide contains everything you need to know to maintain, scale, and secure the Zen Exhibition platform.
 
 ---
 
-## 🛠 Adding a New Project
+## 👥 Managing Members
 
-Projects are managed via `data/projects.json` and markdown files in `content/projects/`.
+Members are autonomous content blocks stored in `data/members/`.
 
-1. **Create Markdown**: Create `content/projects/your-project-id.md` with the project details.
-2. **Update JSON**: Add an entry to `data/projects.json`:
-   ```json
-   {
-     "id": "your-project-id",
-     "title": "Project Name",
-     "shortDescription": "A brief summary...",
-     "members": ["member-id-1", "member-id-2"],
-     "techStack": ["Next.js", "Tailwind"],
-     "year": 2026,
-     "thumbnail": "/content/images/projects/thumb.png",
-     "featured": true
-   }
-   ```
+### 1. Structure
+Each member must have their own folder named after their `id`:
+```
+data/members/
+  └── john-doe/
+      ├── john-doe.json  (Configuration)
+      └── john-doe.md    (Long-form story)
+```
 
----
+### 2. Configuration (`.json`)
+```json
+{
+  "id": "john-doe",
+  "name": "John Doe",
+  "contribution": "Lead Designer",
+  "state": "active",
+  "avatar": "/content/images/avatars/john.png",
+  "github": "https://github.com/johndoe",
+  "shortBio": "Short summary for the index page.",
+  "order": 1
+}
+```
 
-## 📊 Telemetry & Analytics
-
-This platform uses **Neon Database** for private telemetry. 
-- **Setup**: Ensure `NEXT_PUBLIC_DATABASE_URL` is set in your environment.
-- **Events**: Page views, member clicks, and searches are automatically tracked if the user accepts the privacy banner.
-- **Privacy**: IP addresses and search queries are SHA-256 hashed before being sent to the database.
-
----
-
-## 🎨 Design System
-
-We use a high-impact "Big & Bold" design system:
-- **Fonts**: `Outfit` (Headings) & `Inter` (Body).
-- **Colors**: Slate-based dark mode with Indigo/Purple accents.
-- **Components**: Use `SmartLink` instead of `Link` for instant loading feedback.
+### 3. Registry
+You **MUST** add the member ID to `data/members.json` to make them appear on the site.
 
 ---
 
-## 📦 Building for Production
+## 🛠 Managing Projects
 
-To generate the static export:
+Projects are defined in a central JSON file but have individual Markdown blueprints.
+
+1. **Blueprint**: Create `content/projects/project-id.md`.
+2. **Metadata**: Add an entry to the `projects` array in `data/projects.json`.
+   - `members`: An array of member IDs who worked on it.
+   - `featured`: Set to `true` to show it on the home page (if applicable).
+
+---
+
+## 🔐 Security & Database Setup (Neon)
+
+The site uses **Neon Database** for telemetry. Because this is a static export, we use **Row-Level Security (RLS)** to keep the database secure even though the connection URL is in the client bundle.
+
+### 1. Database Creation
+Go to your Neon console and run the contents of `scripts/schema.sql`. This will:
+- Create the `telemetry_events` table with 50+ tracking columns.
+- Create the `subscribers` table for newsletters.
+- **CRITICAL**: Apply RLS policies that allow **INSERT ONLY** for the public connection.
+
+### 2. Environment Variables
+Create a `.env.local` file:
+```env
+NEXT_PUBLIC_DATABASE_URL=your_neon_connection_string
+```
+
+---
+
+## 📊 Analytics & Telemetry
+
+We track high-fidelity data while respecting privacy:
+- **Dwell Time**: How long users stay on each page.
+- **Scroll Depth**: How much of the content is actually read.
+- **Hardware**: CPU cores, RAM (approx), and screen fidelity.
+- **Network**: Connection speed and data-saver status.
+- **Interactions**: Outbound link clicks and CTA usage.
+
+**Privacy Note**: All IP addresses and search queries are SHA-256 hashed before hitting the database.
+
+---
+
+## 🚀 Deployment
+
+The site is optimized for **Vercel** but can be hosted anywhere as a static site.
+
+### Build Command
 ```bash
 npm run build
 ```
-The output will be in the `out/` directory.
+This generates the `out/` folder.
+
+### Vercel Integration
+1. Connect your GitHub repo.
+2. Set the `NEXT_PUBLIC_DATABASE_URL` in the Vercel dashboard.
+3. The build will automatically handle `@vercel/analytics` and `@vercel/speed-insights`.
+
+---
+
+## 🎨 UI Best Practices
+
+- **Typography**: Use `Outfit` for impact headings and `Inter` for legibility.
+- **Spacing**: Stick to the `[2.5rem]` border-radius for main containers.
+- **Mobile**: Always test the "Bottom Sheet" navigation on mobile devices.
+- **Icons**: Use `Lucide-React` for UI and `BrandIcons.js` for social logos.

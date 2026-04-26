@@ -8,6 +8,7 @@ import { LoadingProvider } from '../components/LoadingProvider';
 import TelemetryProvider from '../components/TelemetryProvider';
 import CookieConsent from '../components/CookieConsent';
 import configData from '../data/config.json';
+import ErrorBoundary from '../components/ErrorBoundary';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
@@ -54,7 +55,9 @@ export default function RootLayout({ children }) {
           <LoadingOverlay />
           <Navbar />
         <main className="flex-grow w-full max-w-[1440px] mx-auto px-4 sm:px-6 md:px-12 pt-28 md:pt-32 pb-16 md:pb-20">
-          {children}
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
         </main>
           <Footer />
           <CookieConsent />

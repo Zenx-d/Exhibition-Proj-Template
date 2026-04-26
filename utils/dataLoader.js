@@ -8,6 +8,18 @@ const MEMBERS_DIR = path.join(DATA_DIR, 'members');
 const PROJECTS_FILE = path.join(DATA_DIR, 'projects.json');
 const MEMBERS_FILE = path.join(DATA_DIR, 'members.json');
 
+/**
+ * Sanitize IDs to prevent path traversal attacks.
+ * Only allows alphanumeric characters, hyphens, and underscores.
+ */
+function sanitizeId(id) {
+  if (!id || typeof id !== 'string') return null;
+  const safe = id.replace(/[^a-zA-Z0-9_-]/g, '');
+  // Must be at least 1 char and not too long
+  if (safe.length < 1 || safe.length > 128) return null;
+  return safe;
+}
+
 // Helper for safe JSON reading
 function safeReadJson(filePath) {
   try {
@@ -27,17 +39,21 @@ export function getAllProjects() {
 }
 
 export function getProjectById(id) {
+  const safeId = sanitizeId(id);
+  if (!safeId) return null;
   const projects = getAllProjects();
-  return projects.find(p => p.id === id) || null;
+  return projects.find(p => p.id === safeId) || null;
 }
 
 export function getProjectMarkdownById(id) {
+  const safeId = sanitizeId(id);
+  if (!safeId) return '';
   try {
-    const mdPath = path.join(PROJECTS_DIR, `${id}.md`);
+    const mdPath = path.join(PROJECTS_DIR, `${safeId}.md`);
     if (!fs.existsSync(mdPath)) return '';
     return fs.readFileSync(mdPath, 'utf8');
   } catch (error) {
-    console.error(`Error reading project MD for ${id}:`, error);
+    console.error(`Error reading project MD for ${safeId}:`, error);
     return '';
   }
 }
@@ -52,17 +68,21 @@ export function getAllActiveMemberIds() {
 }
 
 export function getMemberById(id) {
-  const jsonPath = path.join(MEMBERS_DIR, id, `${id}.json`);
+  const safeId = sanitizeId(id);
+  if (!safeId) return null;
+  const jsonPath = path.join(MEMBERS_DIR, safeId, `${safeId}.json`);
   return safeReadJson(jsonPath);
 }
 
 export function getMemberMarkdownById(id) {
+  const safeId = sanitizeId(id);
+  if (!safeId) return '';
   try {
-    const mdPath = path.join(MEMBERS_DIR, id, `${id}.md`);
+    const mdPath = path.join(MEMBERS_DIR, safeId, `${safeId}.md`);
     if (!fs.existsSync(mdPath)) return '';
     return fs.readFileSync(mdPath, 'utf8');
   } catch (error) {
-    console.error(`Error reading member MD for ${id}:`, error);
+    console.error(`Error reading member MD for ${safeId}:`, error);
     return '';
   }
 }
