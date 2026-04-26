@@ -43,26 +43,23 @@ async function getGeo() {
   }
   _geoFetching = true;
   try {
-    // Switch to ipwho.is for better CORS support on free tiers
-    const res = await fetch('https://ipwho.is/', { signal: AbortSignal.timeout(4000) });
+    // Switch to freeipapi.com for maximum compatibility and CORS support
+    const res = await fetch('https://freeipapi.com/api/json/', { signal: AbortSignal.timeout(4000) });
     const d = await res.json();
     
-    if (d.success) {
-      _geoCache = {
-        country: d.country,
-        countryCode: d.country_code,
-        city: d.city,
-        region: d.region,
-        timezone: d.timezone?.id,
-        org: d.connection?.org,
-        latitude: d.latitude,
-        longitude: d.longitude,
-        ipHash: await sha256(d.ip),
-      };
-    } else {
-      _geoCache = {};
-    }
-  } catch {
+    _geoCache = {
+      country: d.countryName,
+      countryCode: d.countryCode,
+      city: d.cityName,
+      region: d.regionName,
+      timezone: d.timeZone,
+      org: d.as || d.isp,
+      latitude: d.latitude,
+      longitude: d.longitude,
+      ipHash: await sha256(d.ipAddress),
+    };
+  } catch (err) {
+    console.warn('[Geo] lookup failed, falling back to empty:', err.message);
     _geoCache = {};
   }
   _geoCallbacks.forEach(cb => cb(_geoCache));
