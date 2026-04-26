@@ -56,7 +56,7 @@ export default async function MemberPage({ params }) {
     <div className="flex flex-col gap-8 md:gap-12">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
       />
       <MemberViewTracker memberId={member.id} memberName={member.name} />
       

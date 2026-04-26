@@ -56,7 +56,7 @@ export default async function ProjectPage({ params }) {
     <div className="flex flex-col gap-12">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
       />
       <ProjectViewTracker projectId={project.id} projectTitle={project.title} />
       

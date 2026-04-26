@@ -4,6 +4,7 @@ import { useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import { cn } from './Badge';
 import ErrorBoundary from './ErrorBoundary';
 
@@ -21,8 +22,16 @@ export default function MarkdownRenderer({ content, className }) {
       
       const newScript = document.createElement('script');
       
-      // Copy all attributes from placeholder (dataset)
-      if (placeholder.dataset.src) newScript.src = placeholder.dataset.src;
+      // Security: Validate source domain
+      if (placeholder.dataset.src) {
+        const isTrusted = TRUSTED_DOMAINS.some(domain => placeholder.dataset.src.includes(domain));
+        if (!isTrusted) {
+          console.warn(`[Security] Blocked untrusted script source: ${placeholder.dataset.src}`);
+          return;
+        }
+        newScript.src = placeholder.dataset.src;
+      }
+      
       if (placeholder.dataset.type) newScript.type = placeholder.dataset.type || 'text/javascript';
       if (placeholder.dataset.async) newScript.async = true;
       
@@ -34,6 +43,20 @@ export default function MarkdownRenderer({ content, className }) {
     });
   }, [content]);
 
+  // Security: Only allow scripts from trusted domains
+  const TRUSTED_DOMAINS = ['youtube.com', 'vimeo.com', 'twitter.com', 'instagram.com', 'zenx-d.vercel.app'];
+
+  // Custom sanitization schema
+  const schema = {
+    ...defaultSchema,
+    tagNames: [...(defaultSchema.tagNames || []), 'script', 'span'],
+    attributes: {
+      ...defaultSchema.attributes,
+      span: [...(defaultSchema.attributes?.span || []), 'className', 'data-src', 'data-type', 'data-async'],
+      script: ['src', 'type', 'async'],
+    }
+  };
+
   if (!content) return null;
 
   return (
@@ -44,7 +67,7 @@ export default function MarkdownRenderer({ content, className }) {
       <ErrorBoundary>
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeRaw]}
+          rehypePlugins={[rehypeRaw, [rehypeSanitize, schema]]}
           components={{
             script: ({ node, ...props }) => {
               // React throws errors for <script> tags in components.
