@@ -21,9 +21,20 @@ function LoadingStateWatcher({ setIsLoading }) {
 
 export function LoadingProvider({ children }) {
   const [isLoading, setIsLoading] = useState(false);
+  const pathname = usePathname();
 
-  const startLoading = () => setIsLoading(true);
   const stopLoading = () => setIsLoading(false);
+  const startLoading = () => {
+    setIsLoading(true);
+    // Safety timeout: Never let the loading screen stay more than 5 seconds
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 5000);
+  };
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, [pathname]);
 
   return (
     <LoadingContext.Provider value={{ isLoading, startLoading, stopLoading }}>

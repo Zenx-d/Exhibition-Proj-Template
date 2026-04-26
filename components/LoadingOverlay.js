@@ -13,7 +13,7 @@ export default function LoadingOverlay() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-white/60 dark:bg-slate-950/60 backdrop-blur-xl"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-white dark:bg-slate-950"
         >
           <div className="flex flex-col items-center gap-8">
             <div className="relative w-24 h-24">

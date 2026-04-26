@@ -41,7 +41,7 @@ export default function ProjectGrid({ projects, projectMembersMap }) {
       className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8"
     >
       {projects.map((project) => (
-        <motion.div key={project.id} variants={item} layout>
+        <motion.div key={project.id} variants={item}>
           <ProjectCard 
             project={project} 
             projectMembers={projectMembersMap ? projectMembersMap[project.id] : []}
