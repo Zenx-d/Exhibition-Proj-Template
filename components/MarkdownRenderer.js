@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
@@ -8,32 +8,8 @@ import { cn } from './Badge';
 
 export default function MarkdownRenderer({ content, className }) {
   const containerRef = useRef(null);
-  const [hasError, setHasError] = useState(false);
-
-  useEffect(() => {
-    if (!containerRef.current || !content || typeof window === 'undefined') return;
-
-    const timer = setTimeout(() => {
-      try {
-        const scripts = containerRef.current.querySelectorAll('script');
-        scripts.forEach((oldScript) => {
-          const newScript = document.createElement('script');
-          Array.from(oldScript.attributes).forEach((attr) => {
-            newScript.setAttribute(attr.name, attr.value);
-          });
-          newScript.textContent = oldScript.textContent;
-          oldScript.parentNode.replaceChild(newScript, oldScript);
-        });
-      } catch (err) {
-        console.error('Failed to execute markdown scripts:', err);
-      }
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, [content]);
 
   if (!content) return null;
-  if (hasError) return <div className="p-8 bg-red-50 text-red-600 rounded-2xl font-bold">Error rendering content.</div>;
 
   return (
     <div 
