@@ -1,6 +1,7 @@
 'use client';
 
 import posthog from 'posthog-js';
+import { logTelemetryEvent, logReferral } from '../lib/telemetry';
 
 // ─── PostHog Initialization ──────────────────────────────────────────────────
 // PostHog is now our PRIMARY and ONLY tracking suite. 
@@ -53,6 +54,26 @@ export async function captureEvent(eventType, eventData = {}, options = {}) {
     scroll_depth: options.timing?.maxScrollDepthPct || null
   });
 
+  // Log to Neon DB safely using the robust JSONB schema
+  try {
+    const payload = {
+      sessionId: getCookie('telemetry_session_id') || 'unknown',
+      eventType,
+      pagePath: window.location.pathname,
+      posthogId: posthog.get_distinct_id(),
+      eventData,
+      category: options.category || 'general',
+      dwellSeconds: options.timing?.dwellSeconds || null,
+      scrollDepth: options.timing?.maxScrollDepthPct || null,
+      userAgent: navigator.userAgent,
+    };
+    await logTelemetryEvent(payload);
+  } catch (err) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('[Telemetry DB] Error:', err.message);
+    }
+  }
+
   if (process.env.NODE_ENV !== 'production') {
     console.log(`[PostHog] Captured: ${eventType}`, eventData);
   }
@@ -71,6 +92,12 @@ export async function captureReferral(tag) {
     referrer_tag: tag,
     path: window.location.pathname
   });
+
+  try {
+    await logReferral(tag, window.location.pathname);
+  } catch (err) {
+    // Ignore DB errors
+  }
 
   if (process.env.NODE_ENV !== 'production') {
     console.log(`[PostHog] Referral Captured: ${tag}`);

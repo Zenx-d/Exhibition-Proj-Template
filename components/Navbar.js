@@ -11,12 +11,19 @@ import { cn } from './Badge';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 30);
+      
+      // Calculate scroll progress for the reading bar
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      setScrollProgress(scrolled);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
@@ -77,6 +84,8 @@ export default function Navbar() {
             <ThemeToggle />
           </nav>
         </div>
+        {/* Reading Progress Bar */}
+        <div className="absolute bottom-0 left-0 h-[2px] bg-indigo-500/50" style={{ width: `${scrollProgress}%`, transition: 'width 0.1s ease-out' }} />
       </header>
 
       {/* ─── MOBILE NAV: Floating Pill ─── */}
