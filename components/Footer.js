@@ -1,28 +1,52 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { subscribeUser } from '../lib/telemetry';
 import { captureEvent } from '../utils/telemetryClient';
 import SmartLink from './SmartLink';
 import Link from 'next/link';
-import { Github, Twitter, Linkedin, Mail, MapPin, ExternalLink } from 'lucide-react';
+import { Github, Twitter, Linkedin, Mail, MapPin, ExternalLink, Check, AlertCircle } from 'lucide-react';
 import configData from '../data/config.json';
+import { validateEmail } from '../lib/emailValidator';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState('idle'); // idle, loading, success, error
+  const [emailError, setEmailError] = useState(null);
+  const [emailSuggestion, setEmailSuggestion] = useState(null);
+
+  const handleEmailChange = useCallback((val) => {
+    setEmail(val);
+    if (status === 'error') setStatus('idle');
+    if (val.length > 5) {
+      const result = validateEmail(val);
+      setEmailError(result.error);
+      setEmailSuggestion(result.suggestion);
+    } else {
+      setEmailError(null);
+      setEmailSuggestion(null);
+    }
+  }, [status]);
 
   const handleSubscribe = async () => {
-    if (!email || !email.includes('@')) return;
+    const result = validateEmail(email);
+    if (!result.valid) {
+      setEmailError(result.error);
+      setEmailSuggestion(result.suggestion);
+      return;
+    }
     setStatus('loading');
-    const result = await subscribeUser(email);
-    if (result.success) {
+    setEmailError(null);
+    setEmailSuggestion(null);
+    const res = await subscribeUser(email);
+    if (res.success) {
       setStatus('success');
       setEmail('');
       captureEvent('newsletter_signup', { status: 'success' });
     } else {
       setStatus('error');
+      setEmailError('Could not subscribe. Please try again.');
     }
   };
 
@@ -113,27 +137,48 @@ export default function Footer() {
             <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 font-medium">
               Get monthly updates on our latest technical experiments.
             </p>
-            <div className="relative">
-              <input
-                type="email"
-                placeholder={status === 'success' ? 'Subscribed!' : 'Enter your email...'}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSubscribe()}
-                disabled={status === 'loading' || status === 'success'}
-                className="w-full pl-4 pr-20 py-3.5 md:py-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-600/10 focus:border-indigo-600 transition-all font-bold text-sm disabled:opacity-50 text-slate-900 dark:text-white placeholder:text-slate-400"
-              />
-              <button
-                onClick={handleSubscribe}
-                disabled={status === 'loading' || status === 'success'}
-                className="absolute right-1.5 top-1.5 bottom-1.5 px-3.5 md:px-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-widest hover:scale-95 transition-transform disabled:scale-100"
-              >
-                {status === 'loading' ? '...' : status === 'success' ? '✓' : 'Join'}
-              </button>
+            <div className="flex flex-col gap-2">
+              <div className="relative">
+                <input
+                  type="email"
+                  placeholder={status === 'success' ? 'Subscribed! 🎉' : 'your@email.com'}
+                  value={email}
+                  onChange={(e) => handleEmailChange(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSubscribe()}
+                  disabled={status === 'loading' || status === 'success'}
+                  className={`w-full pl-4 pr-20 py-3.5 md:py-4 border rounded-2xl transition-all font-bold text-sm disabled:opacity-60 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400
+                    ${emailError
+                      ? 'border-red-400 dark:border-red-500 focus:ring-2 focus:ring-red-300'
+                      : status === 'success'
+                      ? 'border-green-400 dark:border-green-500'
+                      : 'border-slate-200 dark:border-slate-800 focus:ring-4 focus:ring-indigo-600/10 focus:border-indigo-600'
+                    }`}
+                />
+                <button
+                  onClick={handleSubscribe}
+                  disabled={status === 'loading' || status === 'success' || !!emailError}
+                  className="absolute right-1.5 top-1.5 bottom-1.5 px-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all disabled:opacity-50
+                    bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:scale-95 disabled:scale-100 disabled:cursor-not-allowed"
+                >
+                  {status === 'loading' ? '…' : status === 'success' ? <Check size={14} /> : 'Join'}
+                </button>
+              </div>
+              {/* Validation feedback */}
+              {emailError && (
+                <div className="flex items-start gap-1.5">
+                  <AlertCircle size={12} className="text-red-500 shrink-0 mt-0.5" />
+                  <p className="text-[10px] text-red-500 font-bold leading-tight">{emailError}</p>
+                </div>
+              )}
+              {emailSuggestion && (
+                <button
+                  onClick={() => { handleEmailChange(emailSuggestion.replace('Did you mean ', '').replace('?', '')); }}
+                  className="text-left text-[10px] text-indigo-500 font-bold hover:text-indigo-700 transition-colors"
+                >
+                  💡 {emailSuggestion}
+                </button>
+              )}
             </div>
-            {status === 'error' && (
-              <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest">Please use a valid email.</p>
-            )}
           </div>
         </div>
 
