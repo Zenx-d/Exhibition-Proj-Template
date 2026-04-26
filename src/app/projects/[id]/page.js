@@ -79,8 +79,8 @@ export default async function ProjectPage({ params }) {
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
           
           <div className="absolute bottom-8 left-8 right-8 md:bottom-16 md:left-16 md:right-16">
-            <SmartLink href="/projects" className="inline-flex items-center gap-2 text-indigo-400 font-black uppercase tracking-[0.3em] text-[10px] mb-6 hover:gap-4 transition-all">
-              <ArrowLeft size={14} /> Back to Projects
+            <SmartLink href="/projects" className="inline-flex items-center gap-3 text-indigo-400 font-black uppercase tracking-[0.2em] text-sm md:text-base mb-6 hover:gap-5 transition-all">
+              <ArrowLeft size={20} /> Back to Projects
             </SmartLink>
             <h1 className="text-4xl md:text-8xl font-black tracking-tighter text-white mb-6 leading-[0.85] uppercase">{project.title}</h1>
             

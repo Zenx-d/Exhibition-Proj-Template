@@ -73,8 +73,8 @@ export default async function MemberPage({ params }) {
           </div>
           
           <div className="flex-1 text-center md:text-left">
-            <SmartLink href="/members" className="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-black uppercase tracking-[0.3em] text-[10px] mb-6 hover:gap-4 transition-all">
-              <ArrowLeft size={14} /> Back to Team
+            <SmartLink href="/members" className="inline-flex items-center gap-3 text-indigo-600 dark:text-indigo-400 font-black uppercase tracking-[0.2em] text-sm md:text-base mb-6 hover:gap-5 transition-all">
+              <ArrowLeft size={20} /> Back to Team
             </SmartLink>
             <h1 className="text-4xl md:text-7xl font-black tracking-tighter text-slate-900 dark:text-white mb-4 leading-[0.9]">{member.name}</h1>
             <p className="text-xl md:text-3xl text-slate-500 dark:text-slate-400 font-bold mb-8 uppercase tracking-tight">{member.contribution}</p>
