@@ -1,15 +1,30 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
-import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import { cn } from './Badge';
 import ErrorBoundary from './ErrorBoundary';
 
 export default function MarkdownRenderer({ content, className }) {
   const containerRef = useRef(null);
+
+  // Re-enable dynamic script execution for custom exhibition widgets
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const scripts = containerRef.current.querySelectorAll('script');
+    scripts.forEach((oldScript) => {
+      if (oldScript.hasAttribute('data-executed')) return;
+      const newScript = document.createElement('script');
+      Array.from(oldScript.attributes).forEach((attr) => {
+        newScript.setAttribute(attr.name, attr.value);
+      });
+      newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+      newScript.setAttribute('data-executed', 'true');
+      oldScript.parentNode.replaceChild(newScript, oldScript);
+    });
+  }, [content]);
 
   if (!content) return null;
 
@@ -21,19 +36,7 @@ export default function MarkdownRenderer({ content, className }) {
       <ErrorBoundary>
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
-          rehypePlugins={[
-            rehypeRaw, 
-            [rehypeSanitize, {
-              ...defaultSchema,
-              attributes: {
-                ...defaultSchema.attributes,
-                // Allow specific safe attributes that might be useful for styling
-                '*': ['className', 'style'],
-                'iframe': ['src', 'width', 'height', 'frameBorder', 'allow', 'allowFullScreen']
-              },
-              tagNames: [...defaultSchema.tagNames, 'iframe', 'video', 'source']
-            }]
-          ]}
+          rehypePlugins={[rehypeRaw]}
           components={{
             h1: (props) => <h1 className="text-4xl md:text-5xl font-black tracking-tighter mb-8 mt-12 text-slate-900 dark:text-white leading-tight" {...props} />,
             h2: (props) => <h2 className="text-3xl md:text-4xl font-black tracking-tighter mb-6 mt-10 text-slate-900 dark:text-white" {...props} />,

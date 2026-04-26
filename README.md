@@ -29,8 +29,8 @@ Manage site-wide titles, hero text, and exhibition-wide stats (Projects, Members
 ---
 
 ## ⚡ Dynamic Markdown Engine
-Our Markdown engine supports **Embedded HTML**.
-- **Secure by Default:** Inline `<script>` tags are disabled to prevent XSS vulnerabilities. Use `<iframe>` for custom interactive widgets.
+Our Markdown engine supports **Dynamic JavaScript** and **Embedded HTML**.
+- **Interactive Logic:** You can embed `<script>` tags directly in your `.md` files to build custom counters, charts, or animations.
 - **Theme Awareness:** All markdown elements (code blocks, tables, blockquotes) automatically synchronize with the site's light/dark mode.
 - **HTML Embedding:** Support for `<iframe>`, `<video>`, and custom `<div>` structures with automatic responsive scaling.
 
