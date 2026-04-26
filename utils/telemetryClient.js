@@ -3,35 +3,7 @@
 import posthog from 'posthog-js';
 import { logTelemetryEvent, logReferral } from '../lib/telemetry';
 
-// ─── PostHog Initialization ──────────────────────────────────────────────────
-// PostHog is now our PRIMARY and ONLY tracking suite. 
-// It is 100% stable, resolves Geo/Device/OS automatically, and never fails.
-if (typeof window !== 'undefined') {
-  posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY || 'phc_pCTotnCjfPGQbmtjD2BMxG2NXUgy8cZ3cZjfnNVK8yiA', {
-    api_host: '/ingest',
-    ui_host: 'https://us.posthog.com',
-    autocapture: true,
-    capture_pageview: true,
-    persistence: 'localStorage',
-    // Disable session recording as it is high-risk for blocking
-    disable_session_recording: true 
-  });
-}
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-async function sha256(message) {
-  if (typeof window === 'undefined' || !window.crypto?.subtle) return 'unknown';
-  try {
-    const msgUint8 = new TextEncoder().encode(message);
-    const hashBuffer = await window.crypto.subtle.digest('SHA-256', msgUint8);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-  } catch {
-    return 'unknown';
-  }
-}
-
+// Helper to get a cookie
 function getCookie(name) {
   if (typeof document === 'undefined') return null;
   const value = `; ${document.cookie}`;
@@ -41,23 +13,19 @@ function getCookie(name) {
 }
 
 /**
- * Capture and send a telemetry event.
- * Fully migrated to PostHog for 100% reliability. No more Neon SQL errors.
+ * Capture a UI event and log it to both PostHog (analytics) and Neon (raw data).
+ * Completely non-blocking for UI responsiveness.
  */
-export async function captureEvent(eventType, eventData = {}, options = {}) {
-  if (typeof window === 'undefined') return;
-  if (getCookie('cookie-consent') !== 'true') return;
-
-  // Track everything in PostHog
+export function captureEvent(eventType, eventData = {}, options = {}) {
+  // 1. PostHog (Standard Analytics)
   posthog.capture(eventType, {
     ...eventData,
     category: options.category || 'general',
-    path: window.location.pathname,
-    dwell_seconds: options.timing?.dwellSeconds || null,
+    dwell_time: options.timing?.dwellSeconds || null,
     scroll_depth: options.timing?.maxScrollDepthPct || null
   });
 
-  // Log to Neon DB safely using the robust JSONB schema
+  // 2. Log to Neon DB safely using the robust JSONB schema
   try {
     const payload = {
       sessionId: getCookie('telemetry_session_id') || 'unknown',
@@ -70,43 +38,38 @@ export async function captureEvent(eventType, eventData = {}, options = {}) {
       scrollDepth: options.timing?.maxScrollDepthPct || null,
       userAgent: navigator.userAgent,
     };
-    await logTelemetryEvent(payload);
+    // Non-blocking fire-and-forget
+    logTelemetryEvent(payload).catch(() => {});
   } catch (err) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn('[Telemetry DB] Error:', err.message);
-    }
-  }
-
-  if (process.env.NODE_ENV !== 'production') {
-    console.log(`[PostHog] Captured: ${eventType}`, eventData);
+    // Silence errors to keep UI smooth
   }
 }
 
-export async function captureSearch(query, resultCount) {
-  if (!query) return;
-  const hashedQuery = await sha256(query.toLowerCase().trim());
-  await captureEvent('search', { queryHash: hashedQuery, resultCount }, { category: 'engagement' });
+/**
+ * Log a search event with result count
+ */
+export function captureSearch(query, resultCount) {
+  captureEvent('search', { query, resultCount }, { category: 'engagement' });
 }
 
-export async function captureReferral(tag, source = 'url_param', metadata = {}) {
-  if (typeof window === 'undefined') return;
-  console.log(`[Referral] Capturing: ${tag} from ${source}`);
-  
-  posthog.capture('referral_click', { 
-    referrer_tag: tag,
-    source: source,
-    path: window.location.pathname,
+/**
+ * Track a referral tag for attribution
+ */
+export function captureReferral(tag, source = 'direct', metadata = {}) {
+  // Store in session to track future conversions (like newsletter signup)
+  if (typeof sessionStorage !== 'undefined') {
+    sessionStorage.setItem(`ref_${tag}_${Date.now()}`, source);
+  }
+
+  posthog.capture('referral_landed', {
+    tag,
+    source,
     ...metadata
   });
 
   try {
-    await logReferral(tag, window.location.pathname, source, metadata);
-    console.log(`[Referral] Successfully sent to Server Action: ${tag}`);
+    logReferral(tag, window.location.pathname, source, metadata).catch(() => {});
   } catch (err) {
-    console.error(`[Referral] Server Action Error: ${err.message}`);
-  }
-
-  if (process.env.NODE_ENV !== 'production') {
-    console.log(`[PostHog] Referral Captured: ${tag} from ${source}`);
+    // Silence errors
   }
 }
