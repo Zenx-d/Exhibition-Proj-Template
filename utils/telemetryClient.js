@@ -8,11 +8,12 @@ import { logTelemetryEvent, logReferral } from '../lib/telemetry';
 // It is 100% stable, resolves Geo/Device/OS automatically, and never fails.
 if (typeof window !== 'undefined') {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY || 'phc_pCTotnCjfPGQbmtjD2BMxG2NXUgy8cZ3cZjfnNVK8yiA', {
-    api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
+    api_host: '/ingest',
+    ui_host: 'https://us.posthog.com',
     autocapture: true,
     capture_pageview: true,
     persistence: 'localStorage',
-    // Disable session recording to prevent console errors from ad-blockers
+    // Disable session recording as it is high-risk for blocking
     disable_session_recording: true 
   });
 }
