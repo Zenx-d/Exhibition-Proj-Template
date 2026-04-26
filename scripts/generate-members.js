@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const MEMBERS_DIR = path.join(__dirname, '../data/members');
+const MEMBERS_DIR = path.join(__dirname, '../src/data/members');
 
 // Ensure base directory exists
 if (!fs.existsSync(MEMBERS_DIR)) {

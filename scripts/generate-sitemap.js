@@ -1,9 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 
-const configData = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/config.json'), 'utf8'));
+const configData = JSON.parse(fs.readFileSync(path.join(__dirname, '../src/data/config.json'), 'utf8'));
 const DOMAIN = configData.siteUrl;
-const DATA_DIR = path.join(__dirname, '../data');
+const DATA_DIR = path.join(__dirname, '../src/data');
 const PUBLIC_DIR = path.join(__dirname, '../public');
 
 // Static routes
