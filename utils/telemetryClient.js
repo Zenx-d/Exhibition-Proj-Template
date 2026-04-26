@@ -90,6 +90,7 @@ export async function captureSearch(query, resultCount) {
 
 export async function captureReferral(tag, source = 'url_param', metadata = {}) {
   if (typeof window === 'undefined') return;
+  console.log(`[Referral] Capturing: ${tag} from ${source}`);
   
   posthog.capture('referral_click', { 
     referrer_tag: tag,
@@ -100,8 +101,9 @@ export async function captureReferral(tag, source = 'url_param', metadata = {}) 
 
   try {
     await logReferral(tag, window.location.pathname, source, metadata);
+    console.log(`[Referral] Successfully sent to Server Action: ${tag}`);
   } catch (err) {
-    // Ignore DB errors
+    console.error(`[Referral] Server Action Error: ${err.message}`);
   }
 
   if (process.env.NODE_ENV !== 'production') {

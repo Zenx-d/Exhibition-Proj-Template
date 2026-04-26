@@ -22,15 +22,15 @@ The system scans for the following keys in the URL:
 
 ### 1. User Referrals
 If you want to track which community member brought in a visitor:
-`https://zen-exhibition.com/?ref=zen-master-01`
+`https://zenx-d.vercel.app/?ref=zen-master-01`
 
 ### 2. Social Media Campaigns
 Track traffic from specific platforms:
-`https://zen-exhibition.com/?source=linkedin&utm_campaign=launch`
+`https://zenx-d.vercel.app/?source=linkedin&utm_campaign=launch`
 
 ### 3. Cross-Site Linking
 If you are linking from a partner site:
-`https://zen-exhibition.com/?via=partner_name`
+`https://zenx-d.vercel.app/?via=partner_name`
 
 ## 📊 Viewing the Data
 Referral data is stored in two locations:
