@@ -52,7 +52,7 @@ export default function Footer() {
       source: 'footer_newsletter'
     });
     
-    // Save securely to DB without throwing schema errors
+    // Save securely to DB
     try {
       // Look for any referral tags in sessionStorage to attribute this signup
       let refSource = window.location.pathname;
@@ -65,15 +65,22 @@ export default function Footer() {
         }
       } catch (_) {}
 
-      await subscribeUser(email, refSource);
+      const result = await subscribeUser(email, refSource);
+      
+      if (!result.success) {
+        setEmailError(result.error || 'Subscription failed.');
+        setStatus('error');
+        return;
+      }
+      
+      captureEvent('newsletter_signup', { email_hashed: await sha256(email) });
+      setStatus('success');
+      setEmail('');
     } catch (e) {
-      // Ignore DB schema errors, we rely on PostHog as primary
+      console.error('Subscription error:', e);
+      setEmailError('Server connection error. Please try again.');
+      setStatus('error');
     }
-
-    captureEvent('newsletter_signup', { email_hashed: await sha256(email) });
-
-    setStatus('success');
-    setEmail('');
   };
 
   async function sha256(message) {
