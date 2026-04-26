@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && node scripts/generate-sitemap.js",
     "start": "next start",
     "lint": "next lint",
-    "export": "next build",
-    "generate": "node scripts/generate-members.js"
+    "export": "next build && node scripts/generate-sitemap.js",
+    "generate": "node scripts/generate-members.js",
+    "sitemap": "node scripts/generate-sitemap.js"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
