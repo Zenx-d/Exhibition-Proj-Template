@@ -7,6 +7,9 @@ const DATA_DIR = path.join(__dirname, '../data');
 const PUBLIC_DIR = path.join(__dirname, '../public');
 
 // Static routes
+if (!fs.existsSync(PUBLIC_DIR)) {
+  fs.mkdirSync(PUBLIC_DIR, { recursive: true });
+}
 const staticRoutes = [
   '',
   '/members',

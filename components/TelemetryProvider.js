@@ -37,12 +37,28 @@ export default function TelemetryProvider() {
     });
 
     // ── Referral tracking ────────────────────────────────────────────────────
-    const referredBy = searchParams.get('referredby');
-    if (referredBy) {
-      const alreadyTracked = sessionStorage.getItem(`ref_${referredBy}`);
+    const refTags = ['ref', 'referredby', 'utm_source', 'source', 'via', 'tag'];
+    let foundTag = null;
+    let foundSource = 'url_param';
+
+    for (const key of refTags) {
+      const val = searchParams.get(key);
+      if (val) {
+        foundTag = val;
+        foundSource = key;
+        break;
+      }
+    }
+
+    if (foundTag) {
+      const storageKey = `ref_${foundTag}_${foundSource}`;
+      const alreadyTracked = sessionStorage.getItem(storageKey);
       if (!alreadyTracked) {
-        captureReferral(referredBy);
-        sessionStorage.setItem(`ref_${referredBy}`, 'true');
+        captureReferral(foundTag, foundSource, {
+          full_query: searchParams.toString(),
+          landing_page: pathname
+        });
+        sessionStorage.setItem(storageKey, 'true');
       }
     }
   }, [pathname, searchParams]);

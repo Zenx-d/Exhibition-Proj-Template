@@ -92,11 +92,11 @@ export default function RootLayout({ children }) {
           </Suspense>
           <LoadingOverlay />
           <Navbar />
-        <main className="flex-grow w-full pt-28 md:pt-32 pb-16 md:pb-20">
-          <ErrorBoundary>
-            {children}
-          </ErrorBoundary>
-        </main>
+          <main className="flex-grow w-full pt-28 md:pt-32 pb-16 md:pb-20">
+            <ErrorBoundary>
+              {children}
+            </ErrorBoundary>
+          </main>
           <Footer />
           <CookieConsent />
           <Analytics />

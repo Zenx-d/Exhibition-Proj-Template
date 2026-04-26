@@ -1,34 +1,43 @@
--- TELEMETRY EVENTS TABLE
-CREATE TABLE IF NOT EXISTS telemetry_events (
-  id SERIAL PRIMARY KEY,
+-- 🚀 ZEN EXHIBITION PLATFORM - DATABASE SCHEMA
+-- This script initializes the telemetry and referral tracking system.
+
+-- 1. Telemetry Logs (High-Fidelity Tracking)
+CREATE TABLE IF NOT EXISTS telemetry_logs (
+  id BIGSERIAL PRIMARY KEY,
   session_id TEXT,
   event_type TEXT,
-  event_data JSONB,
   page_path TEXT,
-  country TEXT,
-  city TEXT,
-  region TEXT,
-  device_type TEXT,
-  browser TEXT,
-  browser_version TEXT,
-  os TEXT,
-  os_version TEXT,
-  screen_width INTEGER,
-  screen_height INTEGER,
-  user_agent TEXT,
-  referrer TEXT,
-  ip_hash TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  posthog_id TEXT,
+  payload JSONB,
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- INDEXES FOR PERFORMANCE
-CREATE INDEX IF NOT EXISTS idx_session_id ON telemetry_events(session_id);
-CREATE INDEX IF NOT EXISTS idx_event_type ON telemetry_events(event_type);
-CREATE INDEX IF NOT EXISTS idx_created_at ON telemetry_events(created_at);
-
--- SUBSCRIBERS TABLE
+-- 2. Subscribers (Newsletter Management)
 CREATE TABLE IF NOT EXISTS subscribers (
-  id SERIAL PRIMARY KEY,
+  id BIGSERIAL PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  source TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- 3. Referrals (Source & User Attribution)
+CREATE TABLE IF NOT EXISTS referrals (
+  id BIGSERIAL PRIMARY KEY,
+  referrer_tag TEXT,
+  source TEXT,
+  path TEXT,
+  metadata JSONB,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 4. Indexes for Performance
+CREATE INDEX IF NOT EXISTS idx_telemetry_event_type ON telemetry_logs(event_type);
+CREATE INDEX IF NOT EXISTS idx_telemetry_page_path ON telemetry_logs(page_path);
+CREATE INDEX IF NOT EXISTS idx_referral_tag ON referrals(referrer_tag);
+CREATE INDEX IF NOT EXISTS idx_subscriber_email ON subscribers(email);
+
+-- 🛡️ Security Note (For Neon/Supabase/Postgres)
+-- If using Neon with public access, ensure RLS (Row-Level Security) is enabled.
+-- Example:
+-- ALTER TABLE telemetry_logs ENABLE ROW LEVEL SECURITY;
+-- CREATE POLICY "Insert only for everyone" ON telemetry_logs FOR INSERT WITH CHECK (true);

@@ -54,7 +54,18 @@ export default function Footer() {
     
     // Save securely to DB without throwing schema errors
     try {
-      await subscribeUser(email, window.location.pathname);
+      // Look for any referral tags in sessionStorage to attribute this signup
+      let refSource = window.location.pathname;
+      try {
+        const keys = Object.keys(sessionStorage);
+        const refKey = keys.find(k => k.startsWith('ref_'));
+        if (refKey) {
+          const tag = refKey.replace('ref_', '').split('_')[0];
+          refSource = `ref:${tag} on ${window.location.pathname}`;
+        }
+      } catch (_) {}
+
+      await subscribeUser(email, refSource);
     } catch (e) {
       // Ignore DB schema errors, we rely on PostHog as primary
     }

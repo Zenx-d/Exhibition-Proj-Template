@@ -88,21 +88,23 @@ export async function captureSearch(query, resultCount) {
   await captureEvent('search', { queryHash: hashedQuery, resultCount }, { category: 'engagement' });
 }
 
-export async function captureReferral(tag) {
+export async function captureReferral(tag, source = 'url_param', metadata = {}) {
   if (typeof window === 'undefined') return;
   
   posthog.capture('referral_click', { 
     referrer_tag: tag,
-    path: window.location.pathname
+    source: source,
+    path: window.location.pathname,
+    ...metadata
   });
 
   try {
-    await logReferral(tag, window.location.pathname);
+    await logReferral(tag, window.location.pathname, source, metadata);
   } catch (err) {
     // Ignore DB errors
   }
 
   if (process.env.NODE_ENV !== 'production') {
-    console.log(`[PostHog] Referral Captured: ${tag}`);
+    console.log(`[PostHog] Referral Captured: ${tag} from ${source}`);
   }
 }
