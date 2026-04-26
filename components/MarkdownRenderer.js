@@ -13,16 +13,24 @@ export default function MarkdownRenderer({ content, className }) {
   // Re-enable dynamic script execution for custom exhibition widgets
   useEffect(() => {
     if (!containerRef.current) return;
-    const scripts = containerRef.current.querySelectorAll('script');
-    scripts.forEach((oldScript) => {
-      if (oldScript.hasAttribute('data-executed')) return;
+    
+    // Find our custom placeholders and turn them back into real scripts
+    const placeholders = containerRef.current.querySelectorAll('.markdown-script-placeholder');
+    placeholders.forEach((placeholder) => {
+      if (placeholder.hasAttribute('data-executed')) return;
+      
       const newScript = document.createElement('script');
-      Array.from(oldScript.attributes).forEach((attr) => {
-        newScript.setAttribute(attr.name, attr.value);
-      });
-      newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-      newScript.setAttribute('data-executed', 'true');
-      oldScript.parentNode.replaceChild(newScript, oldScript);
+      
+      // Copy all attributes from placeholder (dataset)
+      if (placeholder.dataset.src) newScript.src = placeholder.dataset.src;
+      if (placeholder.dataset.type) newScript.type = placeholder.dataset.type || 'text/javascript';
+      if (placeholder.dataset.async) newScript.async = true;
+      
+      // Copy inner content
+      newScript.textContent = placeholder.textContent;
+      
+      placeholder.setAttribute('data-executed', 'true');
+      document.body.appendChild(newScript);
     });
   }, [content]);
 
@@ -38,6 +46,21 @@ export default function MarkdownRenderer({ content, className }) {
           remarkPlugins={[remarkGfm]}
           rehypePlugins={[rehypeRaw]}
           components={{
+            script: ({ node, ...props }) => {
+              // React throws errors for <script> tags in components.
+              // We render a hidden placeholder instead, which is then 
+              // swapped for a real script by our useEffect.
+              return (
+                <span 
+                  className="hidden markdown-script-placeholder" 
+                  data-src={props.src}
+                  data-type={props.type}
+                  data-async={props.async}
+                >
+                  {props.children}
+                </span>
+              );
+            },
             h1: (props) => <h1 className="text-4xl md:text-5xl font-black tracking-tighter mb-8 mt-12 text-slate-900 dark:text-white leading-tight" {...props} />,
             h2: (props) => <h2 className="text-3xl md:text-4xl font-black tracking-tighter mb-6 mt-10 text-slate-900 dark:text-white" {...props} />,
             h3: (props) => <h3 className="text-2xl font-black tracking-tighter mb-4 mt-8 text-slate-900 dark:text-white" {...props} />,
