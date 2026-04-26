@@ -15,7 +15,7 @@
   "stats": {
     "totalProjects": 1,
     "totalMembers": 7,
-    "totalSpent": "$5,000"
+    "totalSpent": "$500"
   },
   "contact": {
     "email": "generalexhibition@proton.me",
@@ -51,7 +51,7 @@
       "ctaLink": "/projects"
     },
     {
-      "title": "Telemetary Database",
+      "title": "Telemetry Database",
       "description": "Zen is a web application that uses AI to analyze telemetry data from users and generate reports. It is a tool that can be used to improve the experience of users.",
       "image": "/content/images/zen-database-screenshot.png",
       "imageSide": "right",
