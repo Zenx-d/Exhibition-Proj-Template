@@ -1,7 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const DOMAIN = 'https://zenx-d.vercel.app';
+const configData = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/config.json'), 'utf8'));
+const DOMAIN = configData.siteUrl;
 const DATA_DIR = path.join(__dirname, '../data');
 const PUBLIC_DIR = path.join(__dirname, '../public');
 

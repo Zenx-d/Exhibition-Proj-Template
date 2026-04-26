@@ -8,6 +8,7 @@ import Avatar from '../../../components/Avatar';
 import Badge from '../../../components/Badge';
 import ProjectViewTracker from '../../../components/ProjectViewTracker';
 import SmartLink from '../../../components/SmartLink';
+import configData from '../../../data/config.json';
 
 export async function generateStaticParams() {
   const projects = getAllProjects();
@@ -36,8 +37,27 @@ export default async function ProjectPage({ params }) {
   const markdownContent = getProjectMarkdownById(id);
   const teamMembers = getMembersForProject(id);
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: project.title,
+    description: project.shortDescription,
+    image: `${configData.siteUrl}${project.thumbnail}`,
+    url: `${configData.siteUrl}/projects/${project.id}`,
+    author: teamMembers.map(m => ({
+      '@type': 'Person',
+      name: m.name,
+      url: `${configData.siteUrl}/members/${m.id}`,
+    })),
+    keywords: project.techStack?.join(', '),
+  };
+
   return (
     <div className="flex flex-col gap-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <ProjectViewTracker projectId={project.id} projectTitle={project.title} />
       
       {/* Normalized Header Section */}

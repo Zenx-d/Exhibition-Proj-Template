@@ -1,5 +1,11 @@
 {
   "siteTitle": "Zen Exhibition",
+  "siteDescription": "Digital Exhibition of technical pioneers and creative innovations.",
+  "siteUrl": "https://zenx-d.vercel.app",
+  "social": {
+    "twitter": "@ZenExhibition",
+    "github": "Zenx-d/Exhibition-Proj-Template"
+  },
   "hero": {
     "title": "Zen Exhibition Platform",
     "subtitle": "Discover the next generation of technical pioneers in our 2026 showcase for Motherland Secondary School.",

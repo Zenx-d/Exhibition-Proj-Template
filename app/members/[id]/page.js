@@ -8,6 +8,7 @@ import ProjectCard from '../../../components/ProjectCard';
 import Avatar from '../../../components/Avatar';
 import MemberViewTracker from '../../../components/MemberViewTracker';
 import SmartLink from '../../../components/SmartLink';
+import configData from '../../../data/config.json';
 
 export async function generateStaticParams() {
   const members = getAllActiveMembers();
@@ -36,8 +37,27 @@ export default async function MemberPage({ params }) {
   const markdownContent = getMemberMarkdownById(id);
   const memberProjects = getProjectsForMember(id);
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: member.name,
+    jobTitle: member.contribution,
+    description: member.shortBio,
+    image: `${configData.siteUrl}${member.avatar}`,
+    url: `${configData.siteUrl}/members/${member.id}`,
+    sameAs: [
+      member.github,
+      member.social?.linkedin,
+      member.social?.twitter,
+    ].filter(Boolean),
+  };
+
   return (
     <div className="flex flex-col gap-8 md:gap-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <MemberViewTracker memberId={member.id} memberName={member.name} />
       
       {/* Profile Header */}

@@ -23,8 +23,46 @@ const outfit = Outfit({
 });
 
 export const metadata = {
-  title: configData.siteTitle,
+  metadataBase: new URL(configData.siteUrl),
+  title: {
+    default: configData.siteTitle,
+    template: `%s | ${configData.siteTitle}`,
+  },
   description: configData.siteDescription,
+  openGraph: {
+    title: configData.siteTitle,
+    description: configData.siteDescription,
+    url: configData.siteUrl,
+    siteName: configData.siteTitle,
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: configData.siteTitle,
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: configData.siteTitle,
+    description: configData.siteDescription,
+    site: configData.social.twitter,
+    images: ['/og-image.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default function RootLayout({ children }) {
