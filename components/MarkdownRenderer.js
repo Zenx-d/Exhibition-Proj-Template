@@ -13,46 +13,78 @@ import ErrorBoundary from './ErrorBoundary';
 export default function MarkdownRenderer({ content, className }) {
   const containerRef = useRef(null);
 
+  // 1. THE GOATED ATTRIBUTE RESTORATION ENGINE
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // 1. Restore clobbered IDs and Classes (Tailwind Support)
-    const restoreAttributes = () => {
-      if (!containerRef.current) return;
-      const elements = containerRef.current.querySelectorAll('*');
+    const fixAttributes = (root) => {
+      const elements = root.querySelectorAll('*');
       elements.forEach(el => {
-        // Restore IDs
-        if (el.id.startsWith('user-content-')) {
+        // Fix Clobbered IDs
+        if (el.id?.startsWith('user-content-')) {
           const realId = el.id.replace('user-content-', '');
-          if (!document.getElementById(realId)) el.id = realId;
+          if (!document.getElementById(realId) || document.getElementById(realId) === el) {
+            el.id = realId;
+          }
         }
-        // Restore data attributes
+        // Fix Clobbered Names (for forms)
+        if (el.name?.startsWith('user-content-')) {
+          el.name = el.name.replace('user-content-', '');
+        }
+        // Fix Data Attributes & ARIA
         Array.from(el.attributes).forEach(attr => {
           if (attr.name.startsWith('user-content-data-')) {
-            const realName = attr.name.replace('user-content-', '');
-            el.setAttribute(realName, attr.value);
+            el.setAttribute(attr.name.replace('user-content-', ''), attr.value);
+          }
+          if (attr.name.startsWith('user-content-aria-')) {
+            el.setAttribute(attr.name.replace('user-content-', ''), attr.value);
+          }
+          // Ensure 'class' works as well as 'className'
+          if (attr.name === 'class') {
+            el.className = attr.value;
           }
         });
       });
     };
-    restoreAttributes();
+
+    // Initial fix
+    fixAttributes(containerRef.current);
+
+    // Continuous watch for dynamic changes (like TTT board renders)
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach(m => {
+        m.addedNodes.forEach(node => {
+          if (node.nodeType === 1) fixAttributes(node.parentElement || node);
+        });
+      });
+    });
+
+    observer.observe(containerRef.current, { childList: true, subtree: true });
     
-    // 2. Global Exhibition Utility for Scripts
+    // 2. GLOBAL EXHIBITION OS API
     window.Exhibition = {
       notify: (msg, type = 'info') => {
         const toast = document.createElement('div');
-        toast.className = `fixed bottom-8 right-8 px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs z-[9999] animate-slide-up shadow-2xl ${
-          type === 'error' ? 'bg-red-600 text-white' : 'bg-indigo-600 text-white'
+        toast.className = `fixed bottom-8 left-1/2 -translate-x-1/2 px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs z-[9999] animate-fade-in shadow-2xl border-2 ${
+          type === 'error' ? 'bg-red-600 text-white border-red-400' : 'bg-indigo-600 text-white border-indigo-400'
         }`;
+        toast.style.boxShadow = '0 20px 50px rgba(0,0,0,0.5)';
         toast.textContent = msg;
         document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translate(-50%, 20px)';
+          toast.style.transition = 'all 0.5s ease';
+          setTimeout(() => toast.remove(), 500);
+        }, 3000);
       },
-      confetti: () => {
-        console.log('🎉 Confetti placeholder (Add canvas-confetti if needed)');
+      shake: () => {
+        document.body.style.animation = 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both';
+        setTimeout(() => document.body.style.animation = '', 500);
       }
     };
 
+    // 3. SCRIPT EXECUTION SUBSYSTEM
     const runScripts = async () => {
       if (!containerRef.current) return;
       const placeholders = containerRef.current.querySelectorAll('.markdown-script-placeholder');
@@ -99,11 +131,11 @@ export default function MarkdownRenderer({ content, className }) {
                   try {
                     ${scriptContent}
                   } catch (e) {
-                    console.warn('Exhibition Engine [Runtime Error]:', e);
+                    console.warn('Exhibition Engine Runtime Exception:', e);
                   }
                 };
                 if (document.readyState === 'complete') {
-                  setTimeout(__run, 150);
+                  setTimeout(__run, 200); // Wait for React hydration
                 } else {
                   window.addEventListener('load', __run);
                 }
@@ -117,12 +149,14 @@ export default function MarkdownRenderer({ content, className }) {
 
     runScripts();
 
-    // 3. Syntax Highlighting
+    // 4. SYNTAX HIGHLIGHTING
     containerRef.current.querySelectorAll('pre code').forEach((block) => {
       if (!block.hasAttribute('data-highlighted')) {
         hljs.highlightElement(block);
       }
     });
+
+    return () => observer.disconnect();
   }, [content]);
 
   const TRUSTED_DOMAINS = [
@@ -130,7 +164,7 @@ export default function MarkdownRenderer({ content, className }) {
     'zenx-d.vercel.app', 'cdn.jsdelivr.net', 'unpkg.com', 
     'd3js.org', 'cdnjs.cloudflare.com', 'platform.twitter.com',
     'gist.github.com', 'codepen.io', 'stackblitz.com', 'openstreetmap.org',
-    'player.vimeo.com', 'open.spotify.com'
+    'player.vimeo.com', 'open.spotify.com', 'w.soundcloud.com', 'figma.com'
   ];
 
   // Permissive Goated Schema
@@ -149,8 +183,9 @@ export default function MarkdownRenderer({ content, className }) {
       ...defaultSchema.attributes,
       '*': [
         ...(defaultSchema.attributes?.['*'] || []), 
-        'className', 'id', 'style', 'class', 
+        'className', 'id', 'style', 'class', 'name', 'for',
         'onclick', 'onchange', 'oninput', 'onsubmit', 'onmouseover', 'onmouseout', 'onload', 'onerror',
+        'onmousemove', 'onmousedown', 'onmouseup', 'onkeydown', 'onkeyup',
         'data-*', 'aria-*'
       ],
       span: [...(defaultSchema.attributes?.span || []), 'data-src', 'data-type', 'data-async'],
@@ -171,7 +206,6 @@ export default function MarkdownRenderer({ content, className }) {
       path: ['d', 'fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin'],
       circle: ['cx', 'cy', 'r', 'fill', 'stroke'],
       rect: ['x', 'y', 'width', 'height', 'rx', 'ry', 'fill', 'stroke'],
-      // Add more as needed for the ultimate engine
     }
   };
 
@@ -228,13 +262,13 @@ export default function MarkdownRenderer({ content, className }) {
               return (
                 <div className="group relative">
                   <div className="absolute -inset-4 bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-pink-500/20 rounded-[3rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                  <pre className="relative bg-slate-950 p-8 md:p-12 rounded-[2.5rem] border border-slate-800 overflow-x-auto shadow-2xl overflow-hidden">
+                  <pre className="relative bg-slate-950 p-8 md:p-12 rounded-[2.5rem] border border-slate-800 overflow-x-auto shadow-2xl overflow-hidden font-mono">
                     <div className="absolute top-0 right-0 p-4 flex gap-2">
                       <div className="w-3 h-3 rounded-full bg-red-500/20" />
                       <div className="w-3 h-3 rounded-full bg-yellow-500/20" />
                       <div className="w-3 h-3 rounded-full bg-green-500/20" />
                     </div>
-                    <code className={cn("text-sm md:text-lg leading-relaxed text-slate-300 font-mono", className, lang && `hljs language-${lang}`)} {...props}
+                    <code className={cn("text-sm md:text-lg leading-relaxed text-slate-300", className, lang && `hljs language-${lang}`)} {...props}
                       dangerouslySetInnerHTML={lang ? { __html: hljs.highlight(String(children).replace(/\n$/, ''), { language: lang }).value } : undefined}
                     >
                       {!lang ? children : undefined}
