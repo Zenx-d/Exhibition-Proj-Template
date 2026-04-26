@@ -95,28 +95,6 @@ This generates the `out/` folder.
 
 ---
 
-## 🎮 Adding Interactive Content (Zen Widgets)
-
-The Exhibition Template uses a specialized **Zen Widget Mechanic**. Instead of writing complex JavaScript directly in Markdown, you create localized widgets in the `public/` directory.
-
-### How to add a Widget:
-1.  **Create a Folder**: `/public/content/widgets/[category]/[name]/`
-2.  **Add index.html**: Build your game, API fetcher, or 3D scene.
-3.  **Embed in Markdown**:
-    ```html
-    <div data-zen-widget="games/snake" data-height="450"></div>
-    ```
-
-### Available Categories:
-- `games/`: High-performance canvas games.
-- `api/`: Real-time data integrations.
-- `visuals/`: Charts, 3D, and animations.
-- `utils/`: Clocks, countdowns, and tools.
-
-See [docs/zen-widgets.md](/docs/zen-widgets.md) for full technical documentation and the Starter Kit.
-
----
-
 ## 🎨 UI Best Practices
 
 - **Typography**: Use `Outfit` for impact headings and `Inter` for legibility.

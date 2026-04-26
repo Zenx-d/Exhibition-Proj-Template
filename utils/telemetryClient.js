@@ -70,9 +70,11 @@ export async function captureEvent(eventType, eventData = {}, options = {}) {
       scrollDepth: options.timing?.maxScrollDepthPct || null,
       userAgent: navigator.userAgent,
     };
-    logTelemetryEvent(payload).catch(() => {});
+    await logTelemetryEvent(payload);
   } catch (err) {
-    // Silence database connection errors in development to avoid console noise
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('[Telemetry DB] Error:', err.message);
+    }
   }
 
   if (process.env.NODE_ENV !== 'production') {
@@ -98,7 +100,7 @@ export async function captureReferral(tag, source = 'url_param', metadata = {}) 
   });
 
   try {
-    logReferral(tag, window.location.pathname, source, metadata).catch(() => {});
+    await logReferral(tag, window.location.pathname, source, metadata);
     console.log(`[Referral] Successfully sent to Server Action: ${tag}`);
   } catch (err) {
     console.error(`[Referral] Server Action Error: ${err.message}`);
