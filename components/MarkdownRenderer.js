@@ -278,15 +278,18 @@ export default function MarkdownRenderer({ content, className }) {
                 </div>
               );
             },
-            img: (props) => (
-              <div className="my-20 group">
-                <div className="relative rounded-[3rem] md:rounded-[5rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-slate-800">
-                  <img className="w-full object-cover max-h-[800px] transition-transform duration-1000 group-hover:scale-110" {...props} alt={props.alt || 'Exhibition View'} />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            img: (props) => {
+              if (!props.src) return null;
+              return (
+                <div className="my-20 group">
+                  <div className="relative rounded-[3rem] md:rounded-[5rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-slate-800">
+                    <img className="w-full object-cover max-h-[800px] transition-transform duration-1000 group-hover:scale-110" {...props} alt={props.alt || 'Exhibition View'} />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  </div>
+                  {props.alt && <p className="text-center text-[11px] font-black text-slate-400 mt-10 uppercase tracking-[0.5em]">{props.alt}</p>}
                 </div>
-                {props.alt && <p className="text-center text-[11px] font-black text-slate-400 mt-10 uppercase tracking-[0.5em]">{props.alt}</p>}
-              </div>
-            ),
+              );
+            },
             hr: (props) => <hr className="my-24 border-slate-200 dark:border-slate-800 border-[3px] rounded-full w-48 mx-auto opacity-50" {...props} />,
             a: (props) => <a className="text-indigo-600 dark:text-indigo-400 font-black underline underline-offset-[12px] decoration-[3px] hover:decoration-[6px] transition-all" {...props} />,
           }}
@@ -297,4 +300,3 @@ export default function MarkdownRenderer({ content, className }) {
     </div>
   );
 }
-

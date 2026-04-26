@@ -711,9 +711,11 @@
 
 ### Random Dog Image
 <div style="background: #1e1e2e; padding: 30px; border-radius: 16px; text-align: center; margin: 30px 0;">
-  <div id="dogImageDisplay" style="margin-bottom: 20px;"><img id="dogImg" src="" style="max-width: 100%; border-radius: 16px; display: none;"></div>
-  <button onclick="fetch('https://dog.ceo/api/breeds/image/random').then(r => r.json()).then(d => { document.getElementById('dogImg').src = d.message; document.getElementById('dogImg').style.display = 'block'; document.getElementById('dogImageDisplay').innerHTML = ''; document.getElementById('dogImageDisplay').appendChild(document.getElementById('dogImg')); }).catch(() => alert('No dog!'))" style="background: #10b981; color: white; padding: 10px 20px; border-radius: 8px; border: none;">
-    🐕 Random Dog 🐕
+  <div id="dogImageDisplay" style="margin-bottom: 20px; min-height: 200px; display: flex; align-items: center; justify-content: center; color: #a0a0c0;">
+    Click below to see a good boy! 🐕
+  </div>
+  <button onclick="Exhibition.notify('Fetching a cute dog...'); fetch('https://dog.ceo/api/breeds/image/random').then(r => r.json()).then(d => { const img = document.createElement('img'); img.src = d.message; img.style.maxWidth = '100%'; img.style.borderRadius = '16px'; img.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)'; const container = document.getElementById('dogImageDisplay'); container.innerHTML = ''; container.appendChild(img); Exhibition.notify('Dog fetched! 🦴'); }).catch(() => Exhibition.notify('Failed to fetch dog!', 'error'))" style="background: #10b981; color: white; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+    🐕 Get Random Dog 🐕
   </button>
 </div>
 
