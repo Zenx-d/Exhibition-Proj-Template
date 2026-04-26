@@ -10,7 +10,8 @@ When a visitor arrives at the site with a supported URL parameter, the `Telemetr
 
 ## 🛠 Supported Parameters
 The system scans for the following keys in the URL:
-- `ref`: General referrer (e.g., `?ref=username`)
+- `referrer`: Explicit referrer (e.g., `?referrer=youtube` or `?referrer=member-id`)
+- `ref`: Short referrer (e.g., `?ref=username`)
 - `source`: Platform source (e.g., `?source=twitter`)
 - `utm_source`: Standard marketing tag (e.g., `?utm_source=email`)
 - `via`: Attribution tag (e.g., `?via=blog`)

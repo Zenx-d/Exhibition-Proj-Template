@@ -37,7 +37,7 @@ export default function TelemetryProvider() {
     });
 
     // ── Referral tracking ────────────────────────────────────────────────────
-    const refTags = ['ref', 'referredby', 'utm_source', 'source', 'via', 'tag'];
+    const refTags = ['referrer', 'ref', 'referredby', 'utm_source', 'source', 'via', 'tag'];
     let foundTag = null;
     let foundSource = 'url_param';
 

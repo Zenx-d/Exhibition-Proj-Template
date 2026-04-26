@@ -33,8 +33,18 @@ async function initDb() {
   console.log('📝 Executing schema...');
   
   try {
-    // Neon's neon() function requires .query() for plain strings
-    await sql.query(schemaSql);
+    // Split SQL by semicolons and filter out comments/empty lines
+    const statements = schemaSql
+      .split(';')
+      .map(s => s.trim())
+      .filter(s => s.length > 0 && !s.startsWith('--'));
+
+    console.log(`📝 Executing ${statements.length} SQL statements...`);
+    
+    for (const statement of statements) {
+      await sql.query(statement);
+    }
+    
     console.log('✅ Database initialized successfully!');
   } catch (error) {
     console.error('❌ Database Initialization Failed:');
