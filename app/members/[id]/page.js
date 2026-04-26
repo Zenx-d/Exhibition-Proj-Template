@@ -65,7 +65,7 @@ export default async function MemberPage({ params }) {
         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
         
         <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-6 md:gap-10">
-          <Avatar src={member.avatar} alt={member.name} size="xl"
+          <Avatar src={member.avatar} alt={member.name} size="xl" priority
             className="w-24 h-24 sm:w-32 sm:h-32 md:w-48 md:h-48 ring-4 md:ring-8 ring-slate-50 dark:ring-slate-800/50 shadow-2xl shrink-0" />
           
           <div className="flex-1 text-center sm:text-left">

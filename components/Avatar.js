@@ -1,9 +1,10 @@
 'use client';
 
+import Image from 'next/image';
 import { useState } from 'react';
 import { cn } from './Badge';
 
-export default function Avatar({ src, alt, fallback, size = 'md', className }) {
+export default function Avatar({ src, alt, fallback, size = 'md', className, priority = false }) {
   const [hasError, setHasError] = useState(false);
 
   const sizeClasses = {
@@ -22,10 +23,13 @@ export default function Avatar({ src, alt, fallback, size = 'md', className }) {
       className
     )}>
       {src && !hasError ? (
-        <img 
+        <Image 
           src={src} 
-          alt={alt} 
-          className="w-full h-full object-cover" 
+          alt={alt || 'Avatar'} 
+          fill
+          priority={priority}
+          sizes="(max-width: 768px) 10vw, 5vw"
+          className="object-cover" 
           onError={() => setHasError(true)}
         />
       ) : (

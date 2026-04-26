@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import SmartLink from './SmartLink';
 import { ArrowRight } from 'lucide-react';
 import { Github } from './BrandIcons';
@@ -15,7 +16,13 @@ export default function ProjectCard({ project, projectMembers }) {
       {/* Thumbnail */}
       <SmartLink href={`/projects/${id}`} className="block relative aspect-video bg-slate-100 dark:bg-slate-800 overflow-hidden">
         {thumbnail ? (
-          <img src={thumbnail} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" />
+          <Image 
+            src={thumbnail} 
+            alt={title} 
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover group-hover:scale-105 transition-transform duration-1000" 
+          />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-indigo-500/10 to-purple-600/10" />
         )}

@@ -1,9 +1,8 @@
-'use client';
-
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles, Users, Zap, Globe, FolderKanban, Banknote } from 'lucide-react';
+import Image from 'next/image';
+import { ArrowRight, Sparkles, Users, FolderKanban, Banknote } from 'lucide-react';
 import configData from '../data/config.json';
+import { FadeIn, ScrollReveal, ScaleHover } from '../components/Animations';
 
 export default function Home() {
   const { hero, stats } = configData;
@@ -16,45 +15,28 @@ export default function Home() {
         <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-purple-500/5 dark:bg-purple-600/3 blur-[180px]" />
       </div>
 
-      {/* Hero Section - Refined Pro Sizing */}
+      {/* Hero Section */}
       <section className="relative z-10 min-h-[60vh] flex flex-col items-center justify-center pt-20 pb-24">
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white dark:bg-indigo-900/20 border border-slate-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 text-xs font-black uppercase tracking-widest mb-8"
-        >
+        <FadeIn className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white dark:bg-indigo-900/20 border border-slate-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 text-xs font-black uppercase tracking-widest mb-8">
           <Sparkles className="w-3 h-3" />
           <span>Annual Exhibition 2026</span>
-        </motion.div>
+        </FadeIn>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="text-5xl sm:text-6xl md:text-8xl font-black tracking-tighter text-slate-900 dark:text-white text-center leading-[0.95] mb-10 px-4"
-        >
-          {hero.title.split(' ').map((word, i) => (
-            <span key={i} className={word.toLowerCase() === 'zen' ? 'text-transparent bg-clip-text bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500' : ''}>
-              {word}{' '}
-            </span>
-          ))}
-        </motion.h1>
+        <h1 className="text-5xl sm:text-6xl md:text-8xl font-black tracking-tighter text-slate-900 dark:text-white text-center leading-[0.95] mb-10 px-4">
+          <FadeIn delay={0.1}>
+            {hero.title.split(' ').map((word, i) => (
+              <span key={i} className={word.toLowerCase() === 'zen' ? 'text-transparent bg-clip-text bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500' : ''}>
+                {word}{' '}
+              </span>
+            ))}
+          </FadeIn>
+        </h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="max-w-2xl text-base md:text-xl text-slate-500 dark:text-slate-400 text-center leading-relaxed mb-12 px-6"
-        >
-          {hero.subtitle}
-        </motion.p>
+        <FadeIn delay={0.2} className="max-w-2xl text-base md:text-xl text-slate-500 dark:text-slate-400 text-center leading-relaxed mb-12 px-6">
+          <p>{hero.subtitle}</p>
+        </FadeIn>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3 }}
-          className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto px-6"
-        >
+        <FadeIn delay={0.3} className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto px-6">
           <Link 
             href={hero.ctaLink} 
             className="group relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 font-black text-lg text-white bg-indigo-600 rounded-2xl hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-500/20 transition-all duration-300"
@@ -69,10 +51,10 @@ export default function Home() {
             <span>View Work</span>
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Link>
-        </motion.div>
+        </FadeIn>
       </section>
 
-      {/* Stats Grid - Dynamic from Config */}
+      {/* Stats Grid */}
       <section className="relative z-10 py-16 border-t border-slate-100 dark:border-slate-900">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-[1600px] mx-auto px-6">
           <div className="p-6 md:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm transition-transform hover:-translate-y-2">
@@ -105,32 +87,25 @@ export default function Home() {
           <div className="max-w-[1600px] mx-auto px-6 md:px-16">
             <div className={`flex flex-col ${section.imageSide === 'right' ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-16 md:gap-24`}>
               {/* Image Side */}
-              <motion.div 
-                initial={{ opacity: 0, x: section.imageSide === 'right' ? 40 : -40 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                className="w-full md:w-1/2"
-              >
+              <ScrollReveal x={section.imageSide === 'right' ? 40 : -40} className="w-full md:w-1/2">
                 <div className="relative group">
                   <div className="absolute -inset-4 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <motion.img 
-                    src={section.image} 
-                    alt={section.title}
-                    whileHover={{ scale: 1.02, rotate: section.imageSide === 'left' ? -1 : 1 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                    className="relative w-full h-auto max-h-[400px] md:max-h-[600px] object-contain rounded-[2.5rem] shadow-2xl border border-slate-200/50 dark:border-slate-800/50"
-                  />
+                  <ScaleHover rotate={section.imageSide === 'left' ? -1 : 1}>
+                    <div className="relative w-full aspect-square md:aspect-video rounded-[2.5rem] overflow-hidden shadow-2xl border border-slate-200/50 dark:border-slate-800/50">
+                      <Image 
+                        src={section.image} 
+                        alt={section.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        className="object-cover"
+                      />
+                    </div>
+                  </ScaleHover>
                 </div>
-              </motion.div>
+              </ScrollReveal>
 
               {/* Content Side */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="w-full md:w-1/2 space-y-6"
-              >
+              <ScrollReveal y={20} className="w-full md:w-1/2 space-y-6">
                 <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-slate-900 dark:text-white leading-[0.95]">
                   {section.title}
                 </h2>
@@ -147,7 +122,7 @@ export default function Home() {
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
-              </motion.div>
+              </ScrollReveal>
             </div>
           </div>
         </section>

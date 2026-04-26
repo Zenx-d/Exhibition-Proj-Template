@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ExternalLink, Calendar } from 'lucide-react';
 import { Github } from '../../../components/BrandIcons';
@@ -64,7 +65,14 @@ export default async function ProjectPage({ params }) {
       <div className="bg-white dark:bg-slate-900 rounded-[2rem] md:rounded-[2.5rem] overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm relative">
         <div className="relative aspect-video md:aspect-[21/7] w-full">
           {project.thumbnail ? (
-            <img src={project.thumbnail} alt={project.title} className="w-full h-full object-cover" />
+            <Image 
+              src={project.thumbnail} 
+              alt={project.title} 
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover" 
+            />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-indigo-600 to-purple-700" />
           )}
