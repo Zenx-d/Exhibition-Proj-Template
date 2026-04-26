@@ -44,12 +44,14 @@ export default function Footer() {
     setEmailError(null);
     setEmailSuggestion(null);
     
-    // Use PostHog to store the subscriber securely and reliably
+    // Use PostHog to store the subscriber securely
     posthog.identify(email); 
-    posthog.set_person_properties({ 
-      email: email,
-      subscribed_at: new Date().toISOString(),
-      source: 'footer_newsletter'
+    posthog.capture('$set', { 
+      $set: {
+        email: email,
+        subscribed_at: new Date().toISOString(),
+        source: 'footer_newsletter'
+      }
     });
     
     // Save securely to DB
@@ -73,7 +75,7 @@ export default function Footer() {
         return;
       }
       
-      captureEvent('newsletter_signup', { email_hashed: await sha256(email) });
+      await captureEvent('newsletter_signup', { email_hashed: await sha256(email) });
       setStatus('success');
       setEmail('');
     } catch (e) {
