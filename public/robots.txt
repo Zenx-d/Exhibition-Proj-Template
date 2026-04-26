@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
 
-# Sitemaps
-Sitemap: https://zen-exhibition.vercel.app/sitemap.xml
+Sitemap: https://zenx-d.vercel.app/sitemap.xml

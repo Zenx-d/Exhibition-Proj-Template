@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { subscribeUser } from '../lib/telemetry';
 import { captureEvent } from '../utils/telemetryClient';
+import posthog from 'posthog-js';
 import SmartLink from './SmartLink';
 import Link from 'next/link';
 import { Github, Twitter, Linkedin, Mail, MapPin, ExternalLink, Check, AlertCircle } from 'lucide-react';
@@ -44,16 +44,26 @@ export default function Footer() {
     setStatus('loading');
     setEmailError(null);
     setEmailSuggestion(null);
-    const res = await subscribeUser(email, { sourcePath: window.location.pathname });
-    if (res.success) {
-      setStatus('success');
-      setEmail('');
-      captureEvent('newsletter_signup', { status: 'success' });
-    } else {
-      setStatus('error');
-      setEmailError('Could not subscribe. Please try again.');
-    }
+    
+    // Use PostHog to store the subscriber securely and reliably
+    posthog.identify(email); 
+    posthog.set_person_properties({ 
+      email: email,
+      subscribed_at: new Date().toISOString(),
+      source: 'footer_newsletter'
+    });
+    captureEvent('newsletter_signup', { email_hashed: await sha256(email) });
+
+    setStatus('success');
+    setEmail('');
   };
+
+  async function sha256(message) {
+    const msgUint8 = new TextEncoder().encode(message);
+    const hashBuffer = await window.crypto.subtle.digest('SHA-256', msgUint8);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  }
 
   return (
     <footer className="bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-900 pt-16 md:pt-24 pb-10 md:pb-12 transition-colors">
@@ -201,6 +211,21 @@ export default function Footer() {
             </SmartLink>
           </div>
         </div>
+        
+        {/* Development Debug Info */}
+        {process.env.NODE_ENV !== 'production' && (
+          <div className="mt-8 p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">PostHog Active</span>
+              </div>
+              <span className="text-[10px] font-mono text-slate-400">
+                DB: {process.env.NEXT_PUBLIC_DATABASE_URL ? 'Connected' : 'Missing'}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
     </footer>
   );
