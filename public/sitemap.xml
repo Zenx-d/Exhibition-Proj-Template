@@ -1,49 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://zen-exhibition.vercel.app/</loc>
+    <loc>https://zenx-d.vercel.app/</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://zen-exhibition.vercel.app/members/</loc>
+    <loc>https://zenx-d.vercel.app/members/</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://zen-exhibition.vercel.app/projects/</loc>
+    <loc>https://zenx-d.vercel.app/projects/</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://zen-exhibition.vercel.app/privacy/</loc>
+    <loc>https://zenx-d.vercel.app/privacy/</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://zen-exhibition.vercel.app/terms/</loc>
+    <loc>https://zenx-d.vercel.app/terms/</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://zen-exhibition.vercel.app/members/zen-01/</loc>
+    <loc>https://zenx-d.vercel.app/members/zen-01/</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://zen-exhibition.vercel.app/members/zen-02/</loc>
+    <loc>https://zenx-d.vercel.app/members/zen-02/</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://zen-exhibition.vercel.app/projects/Zen-Exhibition/</loc>
+    <loc>https://zenx-d.vercel.app/projects/Zen-Exhibition/</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>

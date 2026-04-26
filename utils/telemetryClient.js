@@ -6,8 +6,8 @@ import posthog from 'posthog-js';
 // PostHog is now our PRIMARY and ONLY tracking suite. 
 // It is 100% stable, resolves Geo/Device/OS automatically, and never fails.
 if (typeof window !== 'undefined') {
-  posthog.init('phc_pCTotnCjfPGQbmtjD2BMxG2NXUgy8cZ3cZjfnNVK8yiA', {
-    api_host: 'https://app.posthog.com',
+  posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY || 'phc_pCTotnCjfPGQbmtjD2BMxG2NXUgy8cZ3cZjfnNVK8yiA', {
+    api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
     autocapture: true,
     capture_pageview: true,
     persistence: 'localStorage'

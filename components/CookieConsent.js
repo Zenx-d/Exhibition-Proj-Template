@@ -19,8 +19,8 @@ export default function CookieConsent() {
   const setConsentCookie = (value) => {
     const expires = new Date();
     expires.setFullYear(expires.getFullYear() + 1);
-    // SameSite=Lax is safe here; Secure would require HTTPS
-    document.cookie = `cookie-consent=${value}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
+    const isHttps = window.location.protocol === 'https:';
+    document.cookie = `cookie-consent=${value}; expires=${expires.toUTCString()}; path=/; SameSite=Lax${isHttps ? '; Secure' : ''}`;
   };
 
   const handleAccept = () => {

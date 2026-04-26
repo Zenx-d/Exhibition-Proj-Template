@@ -23,9 +23,7 @@ export default function Footer() {
       const result = validateEmail(val);
       setEmailError(result.error);
       if (result.suggestion) {
-        // Extract the corrected email from the suggestion text
-        const match = result.suggestion.match(/Did you mean (.+?)[?]/);
-        setEmailSuggestion(match ? { text: result.suggestion, email: match[1] } : null);
+        setEmailSuggestion({ text: `Did you mean ${result.suggestion}?`, email: result.suggestion });
       } else {
         setEmailSuggestion(null);
       }

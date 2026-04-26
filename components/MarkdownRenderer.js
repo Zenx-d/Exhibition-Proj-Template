@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import { cn } from './Badge';
 import ErrorBoundary from './ErrorBoundary';
 
@@ -20,7 +21,19 @@ export default function MarkdownRenderer({ content, className }) {
       <ErrorBoundary>
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeRaw]}
+          rehypePlugins={[
+            rehypeRaw, 
+            [rehypeSanitize, {
+              ...defaultSchema,
+              attributes: {
+                ...defaultSchema.attributes,
+                // Allow specific safe attributes that might be useful for styling
+                '*': ['className', 'style'],
+                'iframe': ['src', 'width', 'height', 'frameBorder', 'allow', 'allowFullScreen']
+              },
+              tagNames: [...defaultSchema.tagNames, 'iframe', 'video', 'source']
+            }]
+          ]}
           components={{
             h1: (props) => <h1 className="text-4xl md:text-5xl font-black tracking-tighter mb-8 mt-12 text-slate-900 dark:text-white leading-tight" {...props} />,
             h2: (props) => <h2 className="text-3xl md:text-4xl font-black tracking-tighter mb-6 mt-10 text-slate-900 dark:text-white" {...props} />,
