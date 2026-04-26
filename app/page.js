@@ -91,13 +91,14 @@ export default function Home() {
                 <div className="relative group">
                   <div className="absolute -inset-4 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <ScaleHover rotate={section.imageSide === 'left' ? -1 : 1}>
-                    <div className="relative w-full aspect-square md:aspect-video rounded-[2.5rem] overflow-hidden shadow-2xl border border-slate-200/50 dark:border-slate-800/50">
+                    <div className="relative w-full rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl border border-slate-200/50 dark:border-slate-800/50 bg-slate-50 dark:bg-slate-900/50">
                       <Image 
                         src={section.image} 
                         alt={section.title}
-                        fill
+                        width={1200}
+                        height={800}
                         sizes="(max-width: 768px) 100vw, 50vw"
-                        className="object-cover"
+                        className="w-full h-auto block"
                       />
                     </div>
                   </ScaleHover>

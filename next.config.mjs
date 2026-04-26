@@ -31,7 +31,7 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://us.posthog.com https://us-assets.i.posthog.com; connect-src 'self' https://us.posthog.com https://us.i.posthog.com; img-src 'self' blob: data: https://us-assets.i.posthog.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-src 'self' https://www.youtube.com https://player.vimeo.com;"
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://us.posthog.com https://us-assets.i.posthog.com https://va.vercel-scripts.com; connect-src 'self' https://us.posthog.com https://us.i.posthog.com https://vitals.vercel-insights.com; img-src 'self' blob: data: https://us-assets.i.posthog.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-src 'self' https://www.youtube.com https://player.vimeo.com;"
           }
         ],
       },
