@@ -40,7 +40,7 @@ export function getSessionId() {
   return sessionId;
 }
 
-// ─── Geo cache (fetched once per session) ────────────────────────────────────
+// ─── Geo cache with Multi-Provider Fallback ──────────────────────────────────
 let _geoCache = null;
 let _geoFetching = false;
 let _geoCallbacks = [];
@@ -51,33 +51,61 @@ async function getGeo() {
     return new Promise((resolve) => _geoCallbacks.push(resolve));
   }
   _geoFetching = true;
-  try {
-    // Switch to freeipapi.com for maximum compatibility and CORS support
-    const res = await fetch('https://freeipapi.com/api/json/', { signal: AbortSignal.timeout(4000) });
-    const d = await res.json();
-    
-    _geoCache = {
-      country: d.countryName,
-      countryCode: d.countryCode,
-      city: d.cityName,
-      region: d.regionName,
-      timezone: d.timeZone,
-      org: d.as || d.isp,
-      latitude: d.latitude,
-      longitude: d.longitude,
-      ipHash: await sha256(d.ipAddress),
-    };
-  } catch (err) {
-    console.warn('[Geo] lookup failed, falling back to empty:', err.message);
-    _geoCache = {};
+
+  const providers = [
+    {
+      url: 'https://geolocation-db.com/json/',
+      map: (d) => ({
+        country: d.country_name,
+        countryCode: d.country_code,
+        city: d.city,
+        region: d.state,
+        latitude: d.latitude,
+        longitude: d.longitude,
+        ip: d.IPv4,
+      })
+    },
+    {
+      url: 'https://ipapi.co/json/',
+      map: (d) => ({
+        country: d.country_name,
+        countryCode: d.country_code,
+        city: d.city,
+        region: d.region,
+        timezone: d.timezone,
+        org: d.org,
+        latitude: d.latitude,
+        longitude: d.longitude,
+        ip: d.ip,
+      })
+    }
+  ];
+
+  for (const provider of providers) {
+    try {
+      const res = await fetch(provider.url, { signal: AbortSignal.timeout(3000) });
+      if (!res.ok) continue;
+      const d = await res.json();
+      const mapped = provider.map(d);
+      _geoCache = {
+        ...mapped,
+        ipHash: await sha256(mapped.ip || '0.0.0.0'),
+      };
+      if (_geoCache.country) break; // Success
+    } catch (e) {
+      console.warn(`[Geo] Provider ${provider.url} failed:`, e.message);
+    }
   }
+
+  if (!_geoCache) _geoCache = {};
+  
   _geoCallbacks.forEach(cb => cb(_geoCache));
   _geoCallbacks = [];
   _geoFetching = false;
   return _geoCache;
 }
 
-// ─── Device info (computed once) ─────────────────────────────────────────────
+// ─── Device info ─────────────────────────────────────────────────────────────
 let _deviceCache = null;
 
 function getDeviceInfo() {
@@ -93,16 +121,17 @@ function getDeviceInfo() {
     engine: r.engine.name || null,
     os: r.os.name || null,
     osVersion: r.os.version || null,
-    pixelRatio: window.devicePixelRatio || 1,
-    deviceMemory: navigator.deviceMemory || null,
-    hardwareConcurrency: navigator.hardwareConcurrency || null,
-    maxTouchPoints: navigator.maxTouchPoints ?? 0,
-    touchSupport: navigator.maxTouchPoints > 0,
+    pixelRatio: typeof window !== 'undefined' ? window.devicePixelRatio : 1,
+    deviceMemory: typeof navigator !== 'undefined' ? navigator.deviceMemory : null,
+    hardwareConcurrency: typeof navigator !== 'undefined' ? navigator.hardwareConcurrency : null,
+    maxTouchPoints: typeof navigator !== 'undefined' ? (navigator.maxTouchPoints ?? 0) : 0,
+    touchSupport: typeof navigator !== 'undefined' ? navigator.maxTouchPoints > 0 : false,
   };
   return _deviceCache;
 }
 
 function getScreenInfo() {
+  if (typeof window === 'undefined') return {};
   return {
     width: window.innerWidth,
     height: window.innerHeight,
@@ -115,6 +144,7 @@ function getScreenInfo() {
 }
 
 function getNetworkInfo() {
+  if (typeof navigator === 'undefined') return {};
   const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
   if (!conn) return {};
   return {
@@ -126,6 +156,7 @@ function getNetworkInfo() {
 }
 
 function getPreferences() {
+  if (typeof window === 'undefined') return {};
   return {
     colorScheme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
     reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
@@ -138,16 +169,11 @@ function getPreferences() {
 
 // ─── Main export ─────────────────────────────────────────────────────────────
 
-/**
- * Capture and send a telemetry event.
- * Returns silently if consent not given or SSR.
- */
 export async function captureEvent(eventType, eventData = {}, options = {}) {
   if (typeof window === 'undefined') return;
   if (getCookie('cookie-consent') !== 'true') return;
 
   try {
-    // Session management
     let sessionId = getSessionId();
 
     const [geo, device, screen, network, preferences] = await Promise.all([
@@ -178,9 +204,8 @@ export async function captureEvent(eventType, eventData = {}, options = {}) {
 
     await logTelemetryEvent(payload);
   } catch (err) {
-    // Silent fail — telemetry must never break the app
     if (process.env.NODE_ENV !== 'production') {
-      console.warn('[captureEvent] failed silently:', err?.message);
+      console.warn('[captureEvent] failed:', err?.message);
     }
   }
 }
@@ -194,18 +219,12 @@ function inferCategory(eventType) {
   return 'other';
 }
 
-/**
- * Capture a search event with hashed query for privacy.
- */
 export async function captureSearch(query, resultCount) {
   if (!query) return;
   const hashedQuery = await sha256(query.toLowerCase().trim());
   await captureEvent('search', { queryHash: hashedQuery, resultCount }, { category: 'engagement' });
 }
 
-/**
- * Capture a referral click.
- */
 export async function captureReferral(tag) {
   if (typeof window === 'undefined') return;
   
