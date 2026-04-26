@@ -5,7 +5,6 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import { captureEvent, captureReferral } from '../utils/telemetryClient';
 
 export default function TelemetryProvider() {
-  console.log('[Telemetry] Provider Initialized');
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const enterTimeRef = useRef(Date.now());
