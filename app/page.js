@@ -31,7 +31,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-6xl md:text-8xl font-black tracking-tighter text-slate-900 dark:text-white text-center leading-[0.95] mb-10"
+          className="text-5xl sm:text-6xl md:text-8xl font-black tracking-tighter text-slate-900 dark:text-white text-center leading-[0.95] mb-10 px-4"
         >
           {hero.title.split(' ').map((word, i) => (
             <span key={i} className={word.toLowerCase() === 'zen' ? 'text-transparent bg-clip-text bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500' : ''}>
@@ -44,7 +44,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="max-w-2xl text-lg md:text-xl text-slate-500 dark:text-slate-400 text-center leading-relaxed mb-12"
+          className="max-w-2xl text-base md:text-xl text-slate-500 dark:text-slate-400 text-center leading-relaxed mb-12 px-6"
         >
           {hero.subtitle}
         </motion.p>
@@ -53,18 +53,18 @@ export default function Home() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3 }}
-          className="flex flex-col sm:flex-row items-center gap-4"
+          className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto px-6"
         >
           <Link 
             href={hero.ctaLink} 
-            className="group relative inline-flex items-center justify-center gap-3 px-8 py-4 font-black text-lg text-white bg-indigo-600 rounded-2xl hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-500/20 transition-all duration-300"
+            className="group relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 font-black text-lg text-white bg-indigo-600 rounded-2xl hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-500/20 transition-all duration-300"
           >
             <span>{hero.ctaText}</span>
             <Users className="w-5 h-5 group-hover:rotate-12 transition-transform" />
           </Link>
           <Link 
             href="/projects" 
-            className="group inline-flex items-center justify-center gap-3 px-8 py-4 font-black text-lg text-slate-700 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300"
+            className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 font-black text-lg text-slate-700 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300"
           >
             <span>View Work</span>
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -74,26 +74,26 @@ export default function Home() {
 
       {/* Stats Grid - Dynamic from Config */}
       <section className="relative z-10 py-16 border-t border-slate-100 dark:border-slate-900">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm transition-transform hover:-translate-y-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          <div className="p-6 md:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm transition-transform hover:-translate-y-2">
             <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-6">
               <FolderKanban size={24} />
             </div>
-            <h3 className="text-4xl font-black text-slate-900 dark:text-white mb-2 tracking-tighter">{stats.totalProjects}</h3>
+            <h3 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-2 tracking-tighter">{stats.totalProjects}</h3>
             <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Total Projects</p>
           </div>
-          <div className="p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm transition-transform hover:-translate-y-2">
+          <div className="p-6 md:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm transition-transform hover:-translate-y-2">
             <div className="w-12 h-12 bg-purple-50 dark:bg-purple-900/20 rounded-xl flex items-center justify-center text-purple-600 dark:text-purple-400 mb-6">
               <Users size={24} />
             </div>
-            <h3 className="text-4xl font-black text-slate-900 dark:text-white mb-2 tracking-tighter">{stats.totalMembers}</h3>
+            <h3 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-2 tracking-tighter">{stats.totalMembers}</h3>
             <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Total Members</p>
           </div>
-          <div className="p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm transition-transform hover:-translate-y-2">
+          <div className="p-6 md:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm transition-transform hover:-translate-y-2 sm:col-span-2 lg:col-span-1">
             <div className="w-12 h-12 bg-green-50 dark:bg-green-900/20 rounded-xl flex items-center justify-center text-green-600 dark:text-green-400 mb-6">
               <Banknote size={24} />
             </div>
-            <h3 className="text-4xl font-black text-slate-900 dark:text-white mb-2 tracking-tighter">{stats.totalSpent}</h3>
+            <h3 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-2 tracking-tighter">{stats.totalSpent}</h3>
             <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Total Exhibition Cost</p>
           </div>
         </div>

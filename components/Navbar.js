@@ -28,21 +28,23 @@ export default function Navbar() {
   return (
     <header className={cn(
       "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
-      isScrolled ? "bg-white/90 dark:bg-slate-950/90 backdrop-blur-2xl border-b border-slate-200 dark:border-slate-800 py-6 shadow-md" : "bg-transparent py-10"
+      isScrolled 
+        ? "bg-white/90 dark:bg-slate-950/90 backdrop-blur-2xl border-b border-slate-200 dark:border-slate-800 py-4 md:py-6 shadow-md" 
+        : "bg-transparent py-6 md:py-10"
     )}>
-      <div className="max-w-[1440px] mx-auto flex items-center justify-between px-8 md:px-16">
-        <SmartLink href="/" className="flex items-center gap-4 group">
+      <div className="max-w-[1440px] mx-auto flex items-center justify-between px-6 md:px-16">
+        <SmartLink href="/" className="flex items-center gap-3 md:gap-4 group">
           <img 
             src="/logo.svg" 
             alt="Zen Logo" 
-            className="w-14 h-14 group-hover:rotate-12 transition-transform duration-500 shadow-xl shadow-indigo-500/20"
+            className="w-10 h-10 md:w-14 md:h-14 group-hover:rotate-12 transition-transform duration-500 shadow-xl shadow-indigo-500/20"
           />
-          <span className="text-3xl font-black tracking-tighter text-slate-900 dark:text-white font-display">
+          <span className="text-xl md:text-3xl font-black tracking-tighter text-slate-900 dark:text-white font-display">
             {configData.siteTitle}
           </span>
         </SmartLink>
 
-        {/* Desktop Nav - Larger Typography */}
+        {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-10">
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
@@ -64,13 +66,14 @@ export default function Navbar() {
         </nav>
 
         {/* Mobile Menu Toggle */}
-        <div className="flex md:hidden items-center gap-6">
+        <div className="flex md:hidden items-center gap-4">
           <ThemeToggle />
           <button 
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="p-2 text-slate-900 dark:text-white"
+            aria-label="Toggle Menu"
           >
-            {mobileMenuOpen ? <X size={32} /> : <Menu size={32} />}
+            {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
       </div>
@@ -79,25 +82,26 @@ export default function Navbar() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            className="fixed inset-0 z-40 bg-white dark:bg-slate-950 flex flex-col items-center justify-center p-12 md:hidden"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed inset-0 z-40 bg-white dark:bg-slate-950 flex flex-col items-center justify-center p-8 md:hidden"
           >
             <button 
               onClick={() => setMobileMenuOpen(false)}
-              className="absolute top-12 right-12 p-2 text-slate-900 dark:text-white"
+              className="absolute top-8 right-8 p-2 text-slate-900 dark:text-white"
+              aria-label="Close Menu"
             >
-              <X size={48} />
+              <X size={36} />
             </button>
             
-            <nav className="flex flex-col gap-12 text-center">
+            <nav className="flex flex-col gap-8 text-center w-full">
               {navItems.map((item) => (
                 <SmartLink 
                   key={item.href} 
                   href={item.href} 
                   onClick={() => setMobileMenuOpen(false)}
-                  className="text-6xl font-black tracking-tighter text-slate-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                  className="text-4xl font-black tracking-tighter text-slate-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors py-2"
                 >
                   {item.name}
                 </SmartLink>
