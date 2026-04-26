@@ -87,7 +87,15 @@ export default function MarkdownRenderer({ content, className }) {
             h1: (props) => <h1 className="text-4xl md:text-5xl font-black tracking-tighter mb-8 mt-12 text-slate-900 dark:text-white leading-tight" {...props} />,
             h2: (props) => <h2 className="text-3xl md:text-4xl font-black tracking-tighter mb-6 mt-10 text-slate-900 dark:text-white" {...props} />,
             h3: (props) => <h3 className="text-2xl font-black tracking-tighter mb-4 mt-8 text-slate-900 dark:text-white" {...props} />,
-            p: (props) => <p className="text-base md:text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-6" {...props} />,
+            p: ({ node, children, ...props }) => {
+              // Fix hydration error: if a paragraph contains an image (which we render as a div), 
+              // we must render the container as a div instead of a p.
+              const isImage = node.children.some(child => child.tagName === 'img');
+              if (isImage) {
+                return <div className="mb-6">{children}</div>;
+              }
+              return <p className="text-base md:text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-6" {...props}>{children}</p>;
+            },
             ul: (props) => <ul className="list-disc pl-6 space-y-2 mb-8 text-base md:text-lg text-slate-600 dark:text-slate-400" {...props} />,
             ol: (props) => <ol className="list-decimal pl-6 space-y-2 mb-8 text-base md:text-lg text-slate-600 dark:text-slate-400" {...props} />,
             li: (props) => <li className="pl-2" {...props} />,
