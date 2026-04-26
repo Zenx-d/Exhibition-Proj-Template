@@ -99,9 +99,9 @@ export default function Footer() {
             <nav className="flex flex-col gap-3 md:gap-4">
               {configData.navbar.items.map((item) => (
                 <Link key={item.href} href={item.href}
-                  className="text-sm md:text-base font-bold text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center gap-2 group">
+                  className="text-base md:text-lg font-bold text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center gap-2 group">
                   {item.name}
-                  <ExternalLink size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <ExternalLink size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Link>
               ))}
             </nav>
@@ -116,8 +116,8 @@ export default function Footer() {
                   <Mail size={16} />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Email</p>
-                  <p className="text-xs md:text-sm font-bold text-slate-700 dark:text-white break-all">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Email</p>
+                  <p className="text-sm md:text-base font-bold text-slate-700 dark:text-white break-all">
                     {configData.contact?.email || 'generalexhibition@proton.me'}
                   </p>
                 </div>
@@ -127,8 +127,8 @@ export default function Footer() {
                   <MapPin size={16} />
                 </div>
                 <div>
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Location</p>
-                  <p className="text-xs md:text-sm font-bold text-slate-700 dark:text-white">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Location</p>
+                  <p className="text-sm md:text-base font-bold text-slate-700 dark:text-white">
                     {configData.contact?.location || 'Nepal'}
                   </p>
                 </div>
@@ -189,14 +189,14 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="pt-8 md:pt-12 border-t border-slate-100 dark:border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-center sm:text-left">
+          <p className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 text-center sm:text-left">
             © {currentYear} {configData.siteTitle}. All Rights Reserved.
           </p>
           <div className="flex items-center gap-6">
-            <SmartLink href="/privacy" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 transition-colors">
+            <SmartLink href="/privacy" className="text-[11px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 transition-colors">
               Privacy Policy
             </SmartLink>
-            <SmartLink href="/terms" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 transition-colors">
+            <SmartLink href="/terms" className="text-[11px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 transition-colors">
               Terms of Service
             </SmartLink>
           </div>

@@ -65,7 +65,7 @@ export default function Navbar() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    'text-xs font-black uppercase tracking-[0.25em] transition-all hover:text-indigo-600 dark:hover:text-indigo-400',
+                    'text-sm font-black uppercase tracking-[0.25em] transition-all hover:text-indigo-600 dark:hover:text-indigo-400',
                     isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400'
                   )}
                 >
@@ -100,9 +100,9 @@ export default function Navbar() {
             <img
               src="/logo.svg"
               alt="Zen Logo"
-              className="w-8 h-8 group-hover:rotate-12 transition-transform duration-300"
+              className="w-9 h-9 group-hover:rotate-12 transition-transform duration-300"
             />
-            <span className="text-base font-black tracking-tighter text-slate-900 dark:text-white font-display">
+            <span className="text-lg font-black tracking-tighter text-slate-900 dark:text-white font-display">
               {configData.siteTitle}
             </span>
           </SmartLink>
@@ -172,7 +172,7 @@ export default function Navbar() {
                         href={item.href}
                         onClick={() => setMobileMenuOpen(false)}
                         className={cn(
-                          'flex items-center gap-4 px-4 py-4 rounded-2xl font-black text-xl tracking-tighter transition-all active:scale-95',
+                          'flex items-center gap-4 px-4 py-4 rounded-2xl font-black text-2xl tracking-tighter transition-all active:scale-95',
                           isActive
                             ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400'
                             : 'text-slate-800 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800'

@@ -43,19 +43,25 @@ async function getGeo() {
   }
   _geoFetching = true;
   try {
-    const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(4000) });
+    // Switch to ipwho.is for better CORS support on free tiers
+    const res = await fetch('https://ipwho.is/', { signal: AbortSignal.timeout(4000) });
     const d = await res.json();
-    _geoCache = {
-      country: d.country_name,
-      countryCode: d.country_code,
-      city: d.city,
-      region: d.region,
-      timezone: d.timezone,
-      org: d.org,
-      latitude: d.latitude,
-      longitude: d.longitude,
-      ipHash: await sha256(d.ip),
-    };
+    
+    if (d.success) {
+      _geoCache = {
+        country: d.country,
+        countryCode: d.country_code,
+        city: d.city,
+        region: d.region,
+        timezone: d.timezone?.id,
+        org: d.connection?.org,
+        latitude: d.latitude,
+        longitude: d.longitude,
+        ipHash: await sha256(d.ip),
+      };
+    } else {
+      _geoCache = {};
+    }
   } catch {
     _geoCache = {};
   }
