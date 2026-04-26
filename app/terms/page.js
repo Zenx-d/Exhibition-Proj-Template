@@ -43,7 +43,7 @@ export default function TermsPage() {
         </section>
 
         <footer className="pt-12 border-t border-slate-100 dark:border-slate-800 text-xs font-bold uppercase tracking-widest text-slate-400">
-          Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+          Last updated: April 2026
         </footer>
       </div>
     </div>
