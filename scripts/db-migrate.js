@@ -29,12 +29,15 @@ async function migrate() {
     const schemaPath = path.join(__dirname, 'schema.sql');
     const schemaSql = fs.readFileSync(schemaPath, 'utf8');
 
-    // Neon's neon() function executes single queries. 
-    // For a large script with multiple statements, we should split by semicolon or use a different client.
-    // However, postgres allows multiple statements in one query if they aren't mixed with utility commands.
+    // Splitting by semicolon is risky but works for basic schemas.
+    // However, Neon's serverless driver can handle multiple statements 
+    // if they are properly formatted.
     
     console.log('⏳ Executing schema.sql...');
-    await sql(schemaSql);
+    
+    // We run the whole block. Tagged template isn't strictly needed for the raw SQL
+    // but the driver expects a certain format.
+    await sql.query(schemaSql);
     
     console.log('✅ Migration successful! Your database is now up to date.');
   } catch (error) {

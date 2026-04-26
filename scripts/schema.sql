@@ -274,3 +274,29 @@ BEGIN
     ALTER TABLE telemetry_events ADD COLUMN screen_avail_height SMALLINT;
   END IF;
 END $$;
+
+-- ═══════════════════════════════════════════════════════════════
+-- TABLE: referral_clicks
+-- Tracks traffic from specific referrers (e.g. ?referredby=zenx-01)
+-- ═══════════════════════════════════════════════════════════════
+CREATE TABLE IF NOT EXISTS referral_clicks (
+  id              BIGSERIAL PRIMARY KEY,
+  referrer_tag    TEXT NOT NULL,
+  session_id      TEXT,
+  page_path       TEXT,
+  country         TEXT,
+  user_agent      TEXT,
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_ref_tag ON referral_clicks(referrer_tag);
+CREATE INDEX IF NOT EXISTS idx_ref_session ON referral_clicks(session_id);
+
+-- Enable RLS for referral_clicks
+ALTER TABLE referral_clicks ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS allow_insert_referrals ON referral_clicks;
+CREATE POLICY allow_insert_referrals
+  ON referral_clicks
+  FOR INSERT
+  WITH CHECK (true);

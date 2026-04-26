@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { captureEvent } from '../utils/telemetryClient';
+import { captureEvent, captureReferral } from '../utils/telemetryClient';
 
 export default function TelemetryProvider() {
   const pathname = usePathname();
@@ -35,6 +35,16 @@ export default function TelemetryProvider() {
       params: searchParams.toString() || null,
       referrer: typeof document !== 'undefined' ? document.referrer || 'direct' : null,
     });
+
+    // ── Referral tracking ────────────────────────────────────────────────────
+    const referredBy = searchParams.get('referredby');
+    if (referredBy) {
+      const alreadyTracked = sessionStorage.getItem(`ref_${referredBy}`);
+      if (!alreadyTracked) {
+        captureReferral(referredBy);
+        sessionStorage.setItem(`ref_${referredBy}`, 'true');
+      }
+    }
   }, [pathname, searchParams]);
 
   // ── Page leave: dwell time + scroll depth ──────────────────────────────────

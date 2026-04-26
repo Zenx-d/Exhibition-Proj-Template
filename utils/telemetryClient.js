@@ -1,7 +1,7 @@
 'use client';
 
 import { UAParser } from 'ua-parser-js';
-import { logTelemetryEvent } from '../lib/telemetry';
+import { logTelemetryEvent, logReferral } from '../lib/telemetry';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -29,6 +29,15 @@ function setCookie(name, value, days) {
   const date = new Date();
   date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
   document.cookie = `${name}=${value || ''}; expires=${date.toUTCString()}; path=/; SameSite=Lax`;
+}
+
+export function getSessionId() {
+  let sessionId = getCookie('telemetry_session');
+  if (!sessionId) {
+    sessionId = typeof crypto !== 'undefined' ? crypto.randomUUID() : Math.random().toString(36).substring(2);
+    setCookie('telemetry_session', sessionId, 1);
+  }
+  return sessionId;
 }
 
 // ─── Geo cache (fetched once per session) ────────────────────────────────────
@@ -139,11 +148,7 @@ export async function captureEvent(eventType, eventData = {}, options = {}) {
 
   try {
     // Session management
-    let sessionId = getCookie('telemetry_session');
-    if (!sessionId) {
-      sessionId = crypto.randomUUID();
-      setCookie('telemetry_session', sessionId, 1);
-    }
+    let sessionId = getSessionId();
 
     const [geo, device, screen, network, preferences] = await Promise.all([
       getGeo(),
@@ -183,7 +188,7 @@ export async function captureEvent(eventType, eventData = {}, options = {}) {
 function inferCategory(eventType) {
   if (['page_view', 'page_leave', 'outbound_click'].includes(eventType)) return 'navigation';
   if (['member_click', 'project_view', 'search', 'filter_used'].includes(eventType)) return 'engagement';
-  if (['visibility_change'].includes(eventType)) return 'system';
+  if (['visibility_change', 'referral_click'].includes(eventType)) return 'system';
   if (['newsletter_signup'].includes(eventType)) return 'form';
   if (['performance'].includes(eventType)) return 'system';
   return 'other';
@@ -196,4 +201,22 @@ export async function captureSearch(query, resultCount) {
   if (!query) return;
   const hashedQuery = await sha256(query.toLowerCase().trim());
   await captureEvent('search', { queryHash: hashedQuery, resultCount }, { category: 'engagement' });
+}
+
+/**
+ * Capture a referral click.
+ */
+export async function captureReferral(tag) {
+  if (typeof window === 'undefined') return;
+  
+  const geo = await getGeo();
+  const sessionId = getSessionId();
+  
+  return logReferral({
+    referrerTag: tag,
+    sessionId: sessionId,
+    pagePath: window.location.pathname,
+    country: geo.country || 'Unknown',
+    userAgent: navigator.userAgent
+  });
 }
