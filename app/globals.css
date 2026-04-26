@@ -21,6 +21,15 @@ h1, h2, h3, h4, h5, h6 {
     --background: #020617;
     --foreground: #f8fafc;
   }
+  
+  ::selection {
+    background-color: #6366f1;
+    color: white;
+  }
+
+  * {
+    @apply border-slate-200 dark:border-slate-800;
+  }
 }
 
 body {
@@ -30,6 +39,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  text-rendering: optimizeLegibility;
 }
 
 /* Custom Scrollbar */
@@ -54,6 +64,11 @@ body {
   background: #6366f1;
   border: 2px solid transparent;
   background-clip: content-box;
+}
+
+/* Glassmorphism Classes */
+.glass {
+  @apply bg-white/70 dark:bg-slate-900/70 backdrop-blur-2xl border border-white/20 dark:border-slate-800/50;
 }
 
 /* Magazine Animations */

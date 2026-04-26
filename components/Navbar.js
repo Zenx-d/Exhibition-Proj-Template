@@ -91,8 +91,8 @@ export default function Navbar() {
           className={cn(
             'pointer-events-auto flex items-center justify-between px-4 py-3 rounded-2xl transition-all duration-300',
             isScrolled
-              ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-xl shadow-black/10 border border-white/40 dark:border-slate-700/50'
-              : 'bg-white/60 dark:bg-slate-900/60 backdrop-blur-md border border-white/20 dark:border-slate-800/30'
+              ? 'bg-white/40 dark:bg-slate-950/40 backdrop-blur-3xl shadow-2xl shadow-black/10 border border-white/20 dark:border-slate-800/50'
+              : 'bg-white/20 dark:bg-slate-950/20 backdrop-blur-2xl border border-white/10 dark:border-slate-800/20'
           )}
         >
           {/* Logo */}

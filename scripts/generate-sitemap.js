@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const DOMAIN = 'https://zen-exhibition.vercel.app';
+const DOMAIN = 'https://zenx-d.vercel.app';
 const DATA_DIR = path.join(__dirname, '../data');
 const PUBLIC_DIR = path.join(__dirname, '../public');
 
