@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
-const DATA_DIR = path.join(process.cwd(), 'data');
-const CONTENT_DIR = path.join(process.cwd(), 'content');
+const DATA_DIR = path.join(process.cwd(), 'src', 'data');
+const CONTENT_DIR = path.join(process.cwd(), 'src', 'content');
 const PROJECTS_DIR = path.join(CONTENT_DIR, 'projects');
 const MEMBERS_DIR = path.join(DATA_DIR, 'members');
 const PROJECTS_FILE = path.join(DATA_DIR, 'projects.json');
