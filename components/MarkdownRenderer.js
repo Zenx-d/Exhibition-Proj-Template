@@ -12,21 +12,20 @@ import ErrorBoundary from './ErrorBoundary';
 export default function MarkdownRenderer({ content, className }) {
   const containerRef = useRef(null);
 
-  // THE TOTAL EXECUTION ENGINE
+  // 1. ZEN CONTENT ENGINE (WIDGETS & SCRIPTS)
   useEffect(() => {
     if (!containerRef.current) return;
 
     const deployContent = async () => {
       if (!containerRef.current) return;
 
-      // 1. ZEN WIDGET DEPLOYMENT
+      // A. Deploy Zen Widgets
       const widgets = containerRef.current.querySelectorAll('[data-zen-widget]');
       widgets.forEach(w => {
         if (w.hasAttribute('data-widget-active')) return;
         const path = w.getAttribute('data-zen-widget');
         const height = w.getAttribute('data-height') || '400';
         if (!path) return;
-
         const iframe = document.createElement('iframe');
         iframe.src = `/content/widgets/${path}/index.html`;
         iframe.style.width = '100%';
@@ -35,37 +34,40 @@ export default function MarkdownRenderer({ content, className }) {
         iframe.style.borderRadius = '24px';
         iframe.style.display = 'block';
         iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups allow-forms');
-        
         w.innerHTML = '';
         w.appendChild(iframe);
         w.setAttribute('data-widget-active', 'true');
       });
 
-      // 2. RAW SCRIPT EXECUTION
+      // B. Execute Raw Scripts
       const placeholders = containerRef.current.querySelectorAll('.markdown-script-placeholder');
       for (const p of placeholders) {
         if (p.hasAttribute('data-executed')) continue;
         p.setAttribute('data-executed', 'true');
-
         const newScript = document.createElement('script');
         if (p.dataset.src) {
+          const isTrusted = TRUSTED_DOMAINS.some(d => p.dataset.src.includes(d));
+          if (!isTrusted) continue;
           newScript.src = p.dataset.src;
           if (p.dataset.async) newScript.async = true;
           document.body.appendChild(newScript);
         } else if (p.textContent) {
-          newScript.textContent = `\n(function(){\ntry{\n${p.textContent}\n}catch(e){console.error(e);}\n})();\n`;
+          // Robust script execution in global scope
+          newScript.textContent = `(function(){\ntry{\n${p.textContent}\n}catch(e){console.warn('Zen Script Error:', e);}\n})();`;
           document.body.appendChild(newScript);
         }
       }
     };
 
     deployContent();
-    const timeout = setTimeout(deployContent, 300);
+    const timeout = setTimeout(deployContent, 800); // Second pass for safe hydration
 
-    const observer = new MutationObserver(deployContent);
+    const observer = new MutationObserver(() => {
+      deployContent();
+    });
     observer.observe(containerRef.current, { childList: true, subtree: true });
 
-    // 3. HIGHLIGHTING
+    // Highlighting
     containerRef.current.querySelectorAll('pre code').forEach(block => {
       if (!block.hasAttribute('data-highlighted')) hljs.highlightElement(block);
     });
@@ -78,91 +80,96 @@ export default function MarkdownRenderer({ content, className }) {
 
   if (!content) return null;
 
-  // Helper to handle raw event handlers like onclick and attributes like class
-  const wrapRawProps = (props) => {
-    const newProps = { ...props };
+  // 2. THE ULTIMATE PROP FIXER (Converts raw HTML attributes to React Props)
+  const fixProps = (rawProps) => {
+    const { node, ...props } = rawProps;
+    const cleanProps = { ...props };
     
-    // Map of HTML attributes to React props
-    const attrMap = {
-      'onclick': 'onClick',
-      'onchange': 'onChange',
-      'oninput': 'onInput',
-      'onsubmit': 'onSubmit',
-      'onmouseover': 'onMouseOver',
-      'onmouseout': 'onMouseOut',
-      'onkeydown': 'onKeyDown',
-      'onkeyup': 'onKeyUp',
-      'class': 'className',
-      'for': 'htmlFor'
-    };
-    
-    Object.keys(attrMap).forEach(attr => {
-      if (typeof newProps[attr] === 'string') {
-        const val = newProps[attr];
-        const reactProp = attrMap[attr];
+    Object.keys(cleanProps).forEach(key => {
+      const lowerKey = key.toLowerCase();
+      
+      // Fix Event Handlers (satisfies React & makes them work)
+      if (lowerKey.startsWith('on') && typeof cleanProps[key] === 'string') {
+        const code = cleanProps[key];
+        const reactKey = lowerKey === 'onclick' ? 'onClick' : 
+                         lowerKey === 'onchange' ? 'onChange' :
+                         lowerKey === 'oninput' ? 'onInput' :
+                         lowerKey === 'onsubmit' ? 'onSubmit' :
+                         lowerKey === 'onmouseover' ? 'onMouseOver' :
+                         lowerKey === 'onmouseout' ? 'onMouseOut' :
+                         'on' + lowerKey.charAt(2).toUpperCase() + key.slice(3);
         
-        if (attr.startsWith('on')) {
-          // Convert string to executable function
-          newProps[reactProp] = (e) => {
-            try {
-              // eslint-disable-next-line no-new-func
-              const fn = new Function('event', val);
-              fn.call(e.target, e);
-            } catch (err) {
-              console.error(`Zen Engine Event Error [${attr}]:`, err);
-            }
-          };
-        } else if (attr === 'class') {
-          newProps[reactProp] = cn(newProps[reactProp], val);
-        } else {
-          newProps[reactProp] = val;
-        }
+        cleanProps[reactKey] = (e) => {
+          try {
+            // eslint-disable-next-line no-new-func
+            const fn = new Function('event', code);
+            fn.call(e.currentTarget || e.target || window, e);
+          } catch (err) {
+            console.error(`Zen Event Error [${key}]:`, err);
+          }
+        };
         
-        // Always remove the raw lowercase/HTML-style attribute to prevent React errors
-        delete newProps[attr];
+        // CRITICAL: Delete original string to stop React errors
+        if (key !== reactKey) delete cleanProps[key];
+        delete cleanProps[lowerKey];
+      }
+      
+      // Map Class to className
+      if (lowerKey === 'class') {
+        cleanProps.className = cn(cleanProps.className, cleanProps[key]);
+        delete cleanProps[key];
+      }
+
+      // Map for to htmlFor
+      if (lowerKey === 'for') {
+        cleanProps.htmlFor = cleanProps[key];
+        delete cleanProps[key];
       }
     });
 
-    // Strip any other properties that start with 'on' but are strings
-    Object.keys(newProps).forEach(key => {
-      if (key.startsWith('on') && typeof newProps[key] === 'string') {
-        delete newProps[key];
-      }
-    });
-
-    return newProps;
+    return cleanProps;
   };
 
+  const TRUSTED_DOMAINS = [
+    'youtube.com', 'vimeo.com', 'twitter.com', 'instagram.com', 'cdn.jsdelivr.net', 
+    'unpkg.com', 'd3js.org', 'cdnjs.cloudflare.com', 'platform.twitter.com', 'open.spotify.com'
+  ];
+
   return (
-    <div ref={containerRef} className={cn("markdown-container max-w-none zen-engine-final", className)}>
+    <div ref={containerRef} className={cn("markdown-container max-w-none zen-engine-ultimate", className)}>
       <ErrorBoundary>
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           rehypePlugins={[rehypeRaw]}
           components={{
-            // HYDRATION GUARD & PROPS WRAPPER
+            // HYDRATION & PROP GUARD
             p: ({ node, children, ...props }) => {
               const checkBlock = (n) => {
                 if (n.type === 'element') {
                   if (['div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'blockquote', 'table', 'pre', 'hr', 'canvas', 'audio', 'video', 'embed', 'form', 'svg', 'details', 'iframe', 'script', 'button', 'input', 'select', 'textarea'].includes(n.tagName)) return true;
+                  if (n.tagName === 'div' && n.properties?.dataZenWidget) return true;
                 }
                 return n.children?.some(checkBlock);
               };
-              if (node.children?.some(checkBlock)) return <div className="mb-8" {...wrapRawProps(props)}>{children}</div>;
-              return <p className="text-lg md:text-2xl text-slate-600 dark:text-slate-400 leading-relaxed mb-10 font-medium" {...wrapRawProps(props)}>{children}</p>;
+              if (node.children?.some(checkBlock)) return <div className="mb-8" {...fixProps(props)}>{children}</div>;
+              return <p className="text-lg md:text-2xl text-slate-600 dark:text-slate-400 leading-relaxed mb-10 font-medium" {...fixProps(props)}>{children}</p>;
             },
-            // INTERACTIVE TAGS
-            div: ({ node, ...props }) => <div {...wrapRawProps(props)} />,
-            button: ({ node, ...props }) => <button {...wrapRawProps(props)} />,
-            span: ({ node, ...props }) => <span {...wrapRawProps(props)} />,
-            input: ({ node, ...props }) => <input {...wrapRawProps(props)} />,
-            canvas: ({ node, ...props }) => <canvas {...wrapRawProps(props)} />,
-            section: ({ node, ...props }) => <section {...wrapRawProps(props)} />,
-            article: ({ node, ...props }) => <article {...wrapRawProps(props)} />,
+            // INTERACTIVE TAG OVERRIDES
+            div: (p) => <div {...fixProps(p)} />,
+            button: (p) => <button {...fixProps(p)} />,
+            span: (p) => <span {...fixProps(p)} />,
+            input: (p) => <input {...fixProps(p)} />,
+            canvas: (p) => <canvas {...fixProps(p)} />,
+            iframe: (p) => (
+              <div className="my-10 rounded-[2rem] overflow-hidden border-2 border-slate-200 dark:border-slate-800 aspect-video shadow-2xl">
+                <iframe {...fixProps(p)} className="w-full h-full" />
+              </div>
+            ),
             // SCRIPT PLACEHOLDER
             script: ({ node, ...props }) => (
               <span className="hidden markdown-script-placeholder" data-src={props.src} data-type={props.type} data-async={props.async}>{props.children}</span>
             ),
+            // PREMIUM STYLING
             h1: (props) => <h1 className="text-5xl md:text-8xl font-black tracking-tighter mb-12 mt-20 text-slate-900 dark:text-white leading-[0.9] decoration-indigo-500/30 underline underline-offset-8" {...props} />,
             h2: (props) => <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-8 mt-16 text-slate-900 dark:text-white leading-tight" {...props} />,
             h3: (props) => <h3 className="text-3xl md:text-4xl font-black tracking-tighter mb-6 mt-12 text-slate-900 dark:text-white" {...props} />,
