@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Zen Clock</title>
+    <style>
+        body { margin: 0; background: transparent; overflow: hidden; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; color: #4f46e5; }
+        #clock { font-size: 80px; font-weight: 900; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; text-shadow: 0 0 30px rgba(79,70,229,0.3); }
+        #date { font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em; opacity: 0.6; margin-top: -10px; }
+    </style>
+</head>
+<body>
+    <div id="clock">00:00:00</div>
+    <div id="date">MONDAY, JAN 01</div>
+
+    <script>
+        function update() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('en-US', { hour12: false });
+            document.getElementById('date').innerText = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: '2-digit' });
+        }
+        setInterval(update, 1000);
+        update();
+    </script>
+</body>
+</html>

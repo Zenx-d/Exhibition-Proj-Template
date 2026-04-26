@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dog API Widget</title>
+    <style>
+        body { margin: 0; background: transparent; overflow: hidden; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        .card { background: #1e293b; padding: 20px; border-radius: 24px; text-align: center; color: white; width: 100%; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; border: 2px solid #4f46e5; }
+        #img-container { flex: 1; overflow: hidden; border-radius: 16px; margin: 15px 0; background: #0f172a; position: relative; }
+        img { width: 100%; height: 100%; object-cover: cover; }
+        button { background: #4f46e5; color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: transform 0.2s; }
+        button:hover { transform: scale(1.05); }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div id="img-container">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.3;">🐶 Fetching...</div>
+        </div>
+        <button onclick="fetchDog()">Get Random Dog 🦴</button>
+    </div>
+
+    <script>
+        async function fetchDog() {
+            const container = document.getElementById('img-container');
+            try {
+                const res = await fetch('https://dog.ceo/api/breeds/image/random');
+                const data = await res.json();
+                container.innerHTML = `<img src="${data.message}" alt="Good boy">`;
+            } catch (e) {
+                container.innerHTML = 'Error fetching dog!';
+            }
+        }
+        fetchDog();
+    </script>
+</body>
+</html>

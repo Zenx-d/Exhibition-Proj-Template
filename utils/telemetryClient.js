@@ -72,9 +72,7 @@ export async function captureEvent(eventType, eventData = {}, options = {}) {
     };
     await logTelemetryEvent(payload);
   } catch (err) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn('[Telemetry DB] Error:', err.message);
-    }
+    // Silence database connection errors in development to avoid console noise
   }
 
   if (process.env.NODE_ENV !== 'production') {

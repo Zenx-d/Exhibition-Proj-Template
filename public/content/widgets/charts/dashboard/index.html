@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Zen Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { margin: 0; background: #0f172a; border-radius: 24px; padding: 20px; overflow: hidden; height: 100vh; box-sizing: border-box; }
+        canvas { width: 100% !important; height: 100% !important; }
+    </style>
+</head>
+<body>
+    <canvas id="chart"></canvas>
+    <script>
+        const ctx = document.getElementById('chart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array(20).fill(''),
+                datasets: [{
+                    label: 'Live Exhibition Engagement',
+                    data: Array(20).fill(0).map(() => Math.random() * 100),
+                    borderColor: '#4f46e5',
+                    backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { display: false },
+                    x: { display: false }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        setInterval(() => {
+            chart.data.datasets[0].data.push(Math.random() * 100);
+            chart.data.datasets[0].data.shift();
+            chart.update('none');
+        }, 1000);
+    </script>
+</body>
+</html>
