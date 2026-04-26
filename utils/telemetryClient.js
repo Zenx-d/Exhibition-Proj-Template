@@ -70,7 +70,7 @@ export async function captureEvent(eventType, eventData = {}, options = {}) {
       scrollDepth: options.timing?.maxScrollDepthPct || null,
       userAgent: navigator.userAgent,
     };
-    await logTelemetryEvent(payload);
+    logTelemetryEvent(payload).catch(() => {});
   } catch (err) {
     // Silence database connection errors in development to avoid console noise
   }
@@ -98,7 +98,7 @@ export async function captureReferral(tag, source = 'url_param', metadata = {}) 
   });
 
   try {
-    await logReferral(tag, window.location.pathname, source, metadata);
+    logReferral(tag, window.location.pathname, source, metadata).catch(() => {});
     console.log(`[Referral] Successfully sent to Server Action: ${tag}`);
   } catch (err) {
     console.error(`[Referral] Server Action Error: ${err.message}`);

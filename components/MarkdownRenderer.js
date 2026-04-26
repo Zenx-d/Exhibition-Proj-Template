@@ -1,199 +1,239 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
-import rehypeKatex from 'rehype-katex';
-import hljs from 'highlight.js';
-import mermaid from 'mermaid';
-import 'highlight.js/styles/github-dark.css';
-import 'katex/dist/katex.min.css';
 import { cn } from './Badge';
 import ErrorBoundary from './ErrorBoundary';
 
-// Initialize Mermaid with a premium dark theme
-if (typeof window !== 'undefined') {
-  mermaid.initialize({
-    startOnLoad: true,
-    theme: 'dark',
-    securityLevel: 'loose',
-    fontFamily: 'var(--font-inter)',
-  });
-}
-
+/**
+ * ZEN-ULTRABOOT ENGINE
+ * A bulletproof Markdown renderer that handles complex interactive scripts, 
+ * 3D models, and games without leaking memory or crashing the browser.
+ */
 export default function MarkdownRenderer({ content, className }) {
   const containerRef = useRef(null);
 
-  // 1. ZEN UNIVERSAL ENGINE (WIDGETS, SCRIPTS, & DIAGRAMS)
+  // Security: Only allow scripts/media from trusted domains
+  const TRUSTED_DOMAINS = [
+    'youtube.com', 'vimeo.com', 'twitter.com', 'instagram.com', 'zenx-d.vercel.app',
+    'cdn.jsdelivr.net', 'd3js.org', 'unpkg.com', 'platform.twitter.com', 'google.com'
+  ];
+
+  // Bridge event handlers before passing to ReactMarkdown
+  const processedContent = useMemo(() => {
+    if (!content) return '';
+    return content.replace(/onclick=/g, 'data-onclick=');
+  }, [content]);
+
   useEffect(() => {
     if (!containerRef.current) return;
+    
+    const activeIntervals = new Set();
+    const activeTimeouts = new Set();
+    const activeListeners = []; // Array of [target, type, fn]
+    const scriptElements = [];
 
-    const deployUniversalContent = async () => {
-      if (!containerRef.current) return;
+    // Proxy global timers to track them for cleanup
+    const originalSetInterval = window.setInterval;
+    const originalSetTimeout = window.setTimeout;
+    const originalWindowAddListener = window.addEventListener;
+    const originalDocAddListener = document.addEventListener;
+    
+    window.setInterval = (...args) => {
+      const id = originalSetInterval(...args);
+      activeIntervals.add(id);
+      return id;
+    };
+    window.setTimeout = (...args) => {
+      const id = originalSetTimeout(...args);
+      activeTimeouts.add(id);
+      return id;
+    };
+    window.addEventListener = (type, fn, options) => {
+      activeListeners.push([window, type, fn]);
+      return originalWindowAddListener.call(window, type, fn, options);
+    };
+    document.addEventListener = (type, fn, options) => {
+      activeListeners.push([document, type, fn]);
+      return originalDocAddListener.call(document, type, fn, options);
+    };
 
-      // A. Global Zen OS Bus (Inter-widget Communication)
-      window.Zen = {
-        state: window.Zen?.state || {},
-        emit: (event, detail) => window.dispatchEvent(new CustomEvent(`zen:${event}`, { detail })),
-        on: (event, fn) => window.addEventListener(`zen:${event}`, (e) => fn(e.detail)),
-        notify: (msg) => {
-           const toast = document.createElement('div');
-           toast.className = "fixed bottom-10 left-1/2 -translate-x-1/2 bg-indigo-600/90 backdrop-blur-xl text-white px-10 py-5 rounded-3xl font-black uppercase tracking-[0.2em] text-[10px] z-[9999] shadow-2xl animate-in fade-in slide-in-from-bottom-10 duration-500 border border-white/10";
-           toast.textContent = msg;
-           document.body.appendChild(toast);
-           setTimeout(() => { toast.classList.add('animate-out', 'fade-out', 'slide-out-to-bottom-10'); setTimeout(() => toast.remove(), 500); }, 3000);
-        }
-      };
-
-      // B. Mermaid Rendering
-      try {
-        await mermaid.run({
-          nodes: containerRef.current.querySelectorAll('.mermaid'),
+    // 1. Script Execution Subsystem
+    const placeholders = containerRef.current.querySelectorAll('.markdown-script-placeholder');
+    
+    const executeInSequence = async () => {
+      for (const placeholder of placeholders) {
+        if (placeholder.hasAttribute('data-executed')) continue;
+        placeholder.setAttribute('data-executed', 'true');
+        
+        await new Promise((resolve) => {
+          const newScript = document.createElement('script');
+          
+          if (placeholder.dataset.src) {
+            const isTrusted = TRUSTED_DOMAINS.some(domain => placeholder.dataset.src.includes(domain));
+            if (!isTrusted) {
+              console.warn(`[Zen] Blocked untrusted script: ${placeholder.dataset.src}`);
+              resolve();
+              return;
+            }
+            newScript.src = placeholder.dataset.src;
+            newScript.onload = () => resolve();
+            newScript.onerror = () => resolve();
+          } else {
+            const code = placeholder.textContent;
+            newScript.textContent = `
+              (function() {
+                try {
+                  ${code}
+                } catch (e) {
+                  console.error('[Zen Script Error]', e);
+                }
+              })();
+            `;
+            // Brief delay to ensure DOM is ready
+            setTimeout(resolve, 5);
+          }
+          
+          if (placeholder.dataset.type) newScript.type = placeholder.dataset.type;
+          if (placeholder.dataset.async) newScript.async = true;
+          
+          scriptElements.push(newScript);
+          document.body.appendChild(newScript);
         });
-      } catch (e) {
-        console.error('Mermaid Render Error:', e);
-      }
-
-      // C. Zen Widgets Deployment
-      const widgets = containerRef.current.querySelectorAll('[data-zen-widget]');
-      widgets.forEach(w => {
-        if (w.hasAttribute('data-widget-active')) return;
-        const path = w.getAttribute('data-zen-widget');
-        const height = w.getAttribute('data-height') || '400';
-        if (!path) return;
-        const iframe = document.createElement('iframe');
-        // Vercel friendly pathing
-        iframe.src = `${window.location.origin}/content/widgets/${path}/index.html`;
-        iframe.style.width = '100%';
-        iframe.style.height = `${height}px`;
-        iframe.style.border = 'none';
-        iframe.style.borderRadius = '32px';
-        iframe.style.display = 'block';
-        iframe.style.boxShadow = '0 30px 60px -12px rgba(0,0,0,0.25), 0 18px 36px -18px rgba(0,0,0,0.3)';
-        iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups allow-forms');
-        w.innerHTML = '';
-        w.appendChild(iframe);
-        w.setAttribute('data-widget-active', 'true');
-      });
-
-      // D. Executive Script Subsystem
-      const placeholders = containerRef.current.querySelectorAll('.markdown-script-placeholder');
-      for (const p of placeholders) {
-        if (p.hasAttribute('data-executed')) continue;
-        p.setAttribute('data-executed', 'true');
-        const newScript = document.createElement('script');
-        if (p.dataset.src) {
-          newScript.src = p.dataset.src;
-          if (p.dataset.async) newScript.async = true;
-          document.body.appendChild(newScript);
-        } else if (p.textContent) {
-          newScript.textContent = `(function(){ try { ${p.textContent} } catch(e){ console.error('Zen Logic Error:', e); } })();`;
-          document.body.appendChild(newScript);
-        }
       }
     };
 
-    deployUniversalContent();
-    const timeout = setTimeout(deployUniversalContent, 800);
-    const observer = new MutationObserver(deployUniversalContent);
-    observer.observe(containerRef.current, { childList: true, subtree: true });
+    executeInSequence();
 
-    // E. Syntax Highlighting
-    containerRef.current.querySelectorAll('pre code').forEach(block => {
-      if (!block.hasAttribute('data-highlighted')) hljs.highlightElement(block);
+    // 2. Global Event Re-hydration (Local Elements)
+    const interactiveElements = containerRef.current.querySelectorAll('[data-onclick]');
+    interactiveElements.forEach((el) => {
+      if (el.hasAttribute('data-handler-attached')) return;
+      
+      const handlerStr = el.getAttribute('data-onclick');
+      const handler = (e) => {
+        try {
+          new Function('event', handlerStr).call(el, e);
+        } catch (e) {
+          console.error('[Zen Event Error]:', e);
+        }
+      };
+      el.addEventListener('click', handler);
+      el.setAttribute('data-handler-attached', 'true');
+      el._zenHandler = handler;
     });
 
-    return () => { observer.disconnect(); clearTimeout(timeout); };
-  }, [content]);
-
-  if (!content) return null;
-
-  // Prop normalization for React/MD hybrid
-  const normalizeProps = (rawProps) => {
-    const { node, ...props } = rawProps;
-    const n = { ...props };
-    Object.keys(n).forEach(key => {
-      const lk = key.toLowerCase();
-      if (lk.startsWith('on') && typeof n[key] === 'string') {
-        const code = n[key];
-        const rk = lk === 'onclick' ? 'onClick' : 'on' + lk.charAt(2).toUpperCase() + key.slice(3);
-        n[rk] = (e) => {
-          try { new Function('event', code).call(e.currentTarget || e.target, e); } catch (err) { console.error('Event Error:', err); }
-        };
-        if (key !== rk) delete n[key];
-        delete n[lk];
+    // 3. Absolute Cleanup
+    return () => {
+      // Restore globals
+      window.setInterval = originalSetInterval;
+      window.setTimeout = originalSetTimeout;
+      window.addEventListener = originalWindowAddListener;
+      document.addEventListener = originalDocAddListener;
+      
+      // Stop all background tasks
+      activeIntervals.forEach(clearInterval);
+      activeTimeouts.forEach(clearTimeout);
+      
+      // Cleanup global listeners (Snake games, etc)
+      activeListeners.forEach(([target, type, fn]) => {
+        target.removeEventListener(type, fn);
+      });
+      
+      // Cleanup script tags
+      scriptElements.forEach(s => s.remove());
+      
+      // Cleanup local event listeners
+      if (containerRef.current) {
+        const interactive = containerRef.current.querySelectorAll('[data-onclick]');
+        interactive.forEach(el => {
+          if (el._zenHandler) el.removeEventListener('click', el._zenHandler);
+        });
       }
-      if (lk === 'class') { n.className = cn(n.className, n[key]); delete n[key]; }
-    });
-    return n;
-  };
+    };
+  }, [processedContent]);
 
+  // Premium Design System for Markdown
   const schema = {
     ...defaultSchema,
-    tagNames: [...(defaultSchema.tagNames || []), 'script', 'span', 'iframe', 'button', 'div', 'i', 'canvas', 'audio', 'video', 'source', 'embed', 'style', 'link', 'blockquote', 'details', 'summary', 'svg', 'path', 'circle'],
+    tagNames: [
+      ...(defaultSchema.tagNames || []), 
+      'script', 'span', 'canvas', 'iframe', 'audio', 'video', 'source', 
+      'embed', 'style', 'link', 'blockquote', 'button', 'input', 'label', 'form'
+    ],
     attributes: {
       ...defaultSchema.attributes,
-      '*': [...(defaultSchema.attributes?.['*'] || []), 'className', 'id', 'style', 'class', 'onclick', 'onchange', 'data-*', 'aria-*'],
-      div: ['data-zen-widget', 'data-height'],
-      iframe: ['src', 'width', 'height', 'allow', 'allowfullscreen', 'sandbox'],
+      '*': [...(defaultSchema.attributes?.['*'] || []), 'style', 'className', 'id', 'data-onclick'],
+      span: [...(defaultSchema.attributes?.span || []), 'data-src', 'data-type', 'data-async'],
+      script: ['src', 'type', 'async'],
+      canvas: ['width', 'height'],
+      iframe: ['src', 'width', 'height', 'frameborder', 'allow', 'allowfullscreen', 'scrolling', 'loading'],
+      audio: ['controls', 'src'],
+      video: ['controls', 'src', 'width', 'height'],
+      source: ['src', 'type'],
+      embed: ['src', 'width', 'height', 'type'],
+      link: ['rel', 'href'],
+      button: ['onclick', 'type'],
+      input: ['type', 'placeholder', 'id', 'name', 'value'],
+      label: ['for'],
+      form: ['action', 'method']
     }
   };
 
   return (
-    <div ref={containerRef} className={cn("markdown-container max-w-none zen-universal-engine", className)}>
+    <div 
+      ref={containerRef}
+      className={cn("markdown-container prose dark:prose-invert max-w-none zen-ultra-renderer", className)}
+    >
       <ErrorBoundary>
         <ReactMarkdown
-          remarkPlugins={[remarkGfm, remarkMath]}
-          rehypePlugins={[rehypeRaw, [rehypeSanitize, schema], rehypeKatex]}
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeRaw, [rehypeSanitize, schema]]}
           components={{
+            script: ({ node, children, ...props }) => (
+              <span className="hidden markdown-script-placeholder" data-src={props.src} data-type={props.type} data-async={props.async}>
+                {children}
+              </span>
+            ),
             p: ({ node, children, ...props }) => {
-              const hasBlock = (n) => {
-                if (n.type === 'element') {
-                  if (['div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'blockquote', 'table', 'pre', 'hr', 'canvas', 'audio', 'video', 'embed', 'form', 'svg', 'details', 'iframe', 'script', 'button'].includes(n.tagName)) return true;
-                  if (n.tagName === 'div' && n.properties?.dataZenWidget) return true;
-                  if (n.tagName === 'code' && !n.properties?.inline) return true;
-                }
-                return n.children?.some(hasBlock);
-              };
-              if (node.children?.some(hasBlock)) return <div className="mb-10" {...normalizeProps(props)}>{children}</div>;
-              return <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-400 leading-relaxed mb-12 font-medium" {...normalizeProps(props)}>{children}</p>;
+              // Robust paragraph unwrapping
+              const blockTags = ['canvas', 'iframe', 'audio', 'video', 'embed', 'div', 'blockquote', 'table', 'pre', 'script', 'style', 'section', 'button', 'input', 'form'];
+              const hasBlock = node.children.some(c => c.type === 'element' && blockTags.includes(c.tagName));
+              if (hasBlock) return <div className="mb-8">{children}</div>;
+              return <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 leading-relaxed mb-8 font-medium" {...props}>{children}</p>;
             },
-            div: (p) => <div {...normalizeProps(p)} />,
-            button: (p) => <button {...normalizeProps(p)} />,
-            span: (p) => <span {...normalizeProps(p)} />,
-            iframe: (p) => (
-              <div className="my-16 rounded-[2.5rem] overflow-hidden border-2 border-slate-200 dark:border-slate-800 aspect-video shadow-[0_40px_80px_-15px_rgba(0,0,0,0.3)]">
-                <iframe {...normalizeProps(p)} className="w-full h-full" />
+            h1: (p) => <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-12 mt-20 text-slate-900 dark:text-white" {...p} />,
+            h2: (p) => <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-8 mt-16 text-slate-900 dark:text-white" {...p} />,
+            h3: (p) => <h3 className="text-2xl md:text-3xl font-bold tracking-tight mb-6 mt-12 text-slate-900 dark:text-white" {...p} />,
+            blockquote: (p) => <blockquote className="border-l-8 border-indigo-500 bg-slate-50 dark:bg-slate-900/50 p-8 rounded-3xl italic text-2xl font-medium text-slate-700 dark:text-slate-300 mb-10 my-10" {...p} />,
+            img: (p) => (
+              <div className="my-12">
+                <img className="rounded-[2.5rem] shadow-2xl w-full object-cover max-h-[600px] border border-slate-200 dark:border-slate-800" {...p} alt={p.alt || 'Exhibition'} />
+                {p.alt && <p className="text-center text-xs font-black text-slate-400 mt-6 uppercase tracking-widest">{p.alt}</p>}
               </div>
             ),
-            script: ({ node, ...p }) => <span className="hidden markdown-script-placeholder" data-src={p.src} data-type={p.type} data-async={p.async}>{p.children}</span>,
-            h1: (p) => <h1 className="text-6xl md:text-9xl font-black tracking-tighter mb-16 mt-24 text-slate-900 dark:text-white leading-[0.85] uppercase" {...p} />,
-            h2: (p) => <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-10 mt-20 text-slate-900 dark:text-white leading-tight decoration-indigo-500/20 underline underline-offset-8" {...p} />,
-            code: ({ inline, className, children, ...p }) => {
-              if (className === 'language-mermaid') return <div className="mermaid my-16 bg-slate-900/50 p-10 rounded-[2.5rem] border border-white/5 shadow-inner">{children}</div>;
-              const match = /language-(\w+)/.exec(className || '');
-              const lang = match ? match[1] : '';
-              if (inline) return <code className="bg-indigo-50 dark:bg-indigo-950/50 px-2 py-0.5 rounded-lg text-indigo-600 dark:text-indigo-400 font-black text-sm" {...p}>{children}</code>;
-              return (
-                <div className="group relative font-mono my-16">
-                  <div className="absolute -inset-4 bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-pink-500/20 rounded-[3.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-                  <pre className="relative bg-slate-950 p-10 md:p-14 rounded-[3rem] border border-white/5 overflow-x-auto shadow-2xl">
-                    <code className={cn("text-sm md:text-lg leading-relaxed text-slate-300", className, lang && `hljs language-${lang}`)} {...p} dangerouslySetInnerHTML={lang ? { __html: hljs.highlight(String(children).replace(/\n$/, ''), { language: lang }).value } : undefined}>
-                      {!lang ? children : undefined}
-                    </code>
-                  </pre>
-                </div>
-              );
-            },
-            blockquote: (p) => <blockquote className="border-l-[16px] border-indigo-600 bg-white dark:bg-white/5 p-12 md:p-20 rounded-[3rem] italic text-3xl md:text-5xl font-black text-slate-800 dark:text-slate-100 mb-16 my-16 shadow-2xl" {...p} />,
-            hr: (p) => <hr className="my-32 border-slate-200 dark:border-slate-800 border-[4px] rounded-full w-64 mx-auto opacity-30" {...p} />,
-            a: (p) => <a className="text-indigo-600 dark:text-indigo-400 font-black underline underline-offset-[16px] decoration-[4px] hover:decoration-[8px] transition-all" {...p} />,
+            button: (p) => <button className="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-700 transition-all shadow-lg active:scale-95" {...p} />,
+            input: (p) => <input className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-6 py-4 w-full focus:ring-2 focus:ring-indigo-500 outline-none transition-all" {...p} />,
+            table: (p) => (
+              <div className="overflow-x-auto my-12 rounded-[2rem] border border-slate-200 dark:border-slate-800">
+                <table className="w-full text-left border-collapse" {...p} />
+              </div>
+            ),
+            th: (p) => <th className="p-6 bg-slate-50 dark:bg-slate-900/50 font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800" {...p} />,
+            td: (p) => <td className="p-6 border-b border-slate-100 dark:border-slate-900 text-slate-600 dark:text-slate-400" {...p} />,
+            hr: (p) => <hr className="my-20 border-slate-200 dark:border-slate-800 border-2 rounded-full w-32 mx-auto" {...p} />,
+            iframe: (p) => (
+              <div className="my-12 rounded-[2.5rem] overflow-hidden border border-slate-200 dark:border-slate-800 aspect-video shadow-xl">
+                <iframe className="w-full h-full" {...p} />
+              </div>
+            ),
+            a: (p) => <a className="text-indigo-600 dark:text-indigo-400 font-bold underline underline-offset-8 hover:text-indigo-700 transition-colors" {...p} />,
           }}
         >
-          {content}
+          {processedContent}
         </ReactMarkdown>
       </ErrorBoundary>
     </div>

@@ -54,9 +54,9 @@
   .ultra-glass {
     @apply bg-white/70 dark:bg-slate-900/60 backdrop-blur-2xl border border-white/20 dark:border-white/5 shadow-2xl;
   }
-
+ 
   .premium-card {
-    @apply ultra-glass rounded-3xl transition-all duration-500 hover:scale-[1.02] hover:shadow-indigo-500/10;
+    @apply bg-white/70 dark:bg-slate-900/60 backdrop-blur-2xl border border-white/20 dark:border-white/5 shadow-2xl rounded-3xl transition-all duration-500 hover:scale-[1.02] hover:shadow-indigo-500/10;
   }
 
   .interactive-button {
