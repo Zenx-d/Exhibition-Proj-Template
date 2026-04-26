@@ -206,8 +206,14 @@ export default function Footer() {
                 </button>
               </div>
               {/* Validation feedback */}
-              {emailError && (
-                <div className="flex items-start gap-1.5">
+              {status === 'success' && (
+                <div className="flex items-start gap-1.5 animate-in fade-in slide-in-from-top-1 duration-500">
+                  <Check size={12} className="text-green-500 shrink-0 mt-0.5" />
+                  <p className="text-[10px] text-green-500 font-bold leading-tight">Subscribed successfully! Welcome to the lab.</p>
+                </div>
+              )}
+              {emailError && status === 'error' && (
+                <div className="flex items-start gap-1.5 animate-in fade-in slide-in-from-top-1">
                   <AlertCircle size={12} className="text-red-500 shrink-0 mt-0.5" />
                   <p className="text-[10px] text-red-500 font-bold leading-tight">{emailError}</p>
                 </div>
