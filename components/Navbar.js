@@ -52,7 +52,7 @@ export default function Navbar() {
             : 'bg-transparent py-10'
         )}
       >
-        <div className="max-w-[1440px] mx-auto w-full flex items-center justify-between px-16">
+        <div className="max-w-[1600px] mx-auto w-full flex items-center justify-between px-16">
           <SmartLink href="/" className="flex items-center gap-4 group">
             <img
               src="/logo.svg"

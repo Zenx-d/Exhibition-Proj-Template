@@ -11,7 +11,9 @@ if (typeof window !== 'undefined') {
     api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
     autocapture: true,
     capture_pageview: true,
-    persistence: 'localStorage'
+    persistence: 'localStorage',
+    // Disable session recording to prevent console errors from ad-blockers
+    disable_session_recording: true 
   });
 }
 

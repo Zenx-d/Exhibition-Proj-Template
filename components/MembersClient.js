@@ -37,7 +37,7 @@ export default function MembersClient({ initialMembers, projectCountMap }) {
   }, [filters.search, filteredMembers.length]);
 
   return (
-    <div className="flex flex-col gap-12">
+    <div className="max-w-[1600px] mx-auto px-6 md:px-12 flex flex-col gap-12">
       {/* Normalized Header */}
       <section className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-8 md:pb-12">
         <div>
@@ -54,7 +54,7 @@ export default function MembersClient({ initialMembers, projectCountMap }) {
       </section>
 
       {/* Sticky Filter Bar */}
-      <div className="sticky top-24 z-40 bg-slate-50/90 dark:bg-slate-950/90 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 py-4 -mx-4 px-4 sm:-mx-6 sm:px-6 md:-mx-12 md:px-12">
+      <div className="sticky top-24 z-40 bg-slate-50/90 dark:bg-slate-950/90 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 py-4">
         <div className="flex flex-col gap-3">
           {/* Top row: Search + Toggle */}
           <div className="flex items-center gap-3">

@@ -34,5 +34,23 @@
   "features": {
     "showProjectCountOnMemberCards": true,
     "enableGlowEffects": true
-  }
+  },
+  "contentSections": [
+    {
+      "title": "Zen Innovation",
+      "description": "We explore the cutting edge of web technologies, from advanced animations to secure database integrations. Our exhibition showcases how modern tools can be pushed to their limits.",
+      "image": "/content/images/zen-template-screenshot.png",
+      "imageSide": "left",
+      "ctaText": "Explore Innovation",
+      "ctaLink": "/projects"
+    },
+    {
+      "title": "Telemetary Database",
+      "description": "Zen is a web application that uses AI to analyze telemetry data from users and generate reports. It is a tool that can be used to improve the experience of users.",
+      "image": "/content/images/zen-database-screenshot.png",
+      "imageSide": "right",
+      "ctaText": "Meet the Designers",
+      "ctaLink": "/members"
+    }
+  ]
 }

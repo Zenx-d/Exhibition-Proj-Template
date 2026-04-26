@@ -11,9 +11,9 @@ export default function Home() {
   return (
     <div className="relative overflow-hidden">
       {/* Subtle Background */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-500/10 dark:bg-indigo-600/5 blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-purple-500/10 dark:bg-purple-600/5 blur-[120px]" />
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-indigo-500/5 dark:bg-indigo-600/3 blur-[180px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-purple-500/5 dark:bg-purple-600/3 blur-[180px]" />
       </div>
 
       {/* Hero Section - Refined Pro Sizing */}
@@ -74,7 +74,7 @@ export default function Home() {
 
       {/* Stats Grid - Dynamic from Config */}
       <section className="relative z-10 py-16 border-t border-slate-100 dark:border-slate-900">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-[1600px] mx-auto px-6">
           <div className="p-6 md:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm transition-transform hover:-translate-y-2">
             <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-6">
               <FolderKanban size={24} />
@@ -98,6 +98,60 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Dynamic Content Sections */}
+      {configData.contentSections && configData.contentSections.map((section, index) => (
+        <section key={index} className="relative z-10 py-24 md:py-32 overflow-hidden">
+          <div className="max-w-[1600px] mx-auto px-6 md:px-16">
+            <div className={`flex flex-col ${section.imageSide === 'right' ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-16 md:gap-24`}>
+              {/* Image Side */}
+              <motion.div 
+                initial={{ opacity: 0, x: section.imageSide === 'right' ? 40 : -40 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="w-full md:w-1/2"
+              >
+                <div className="relative group">
+                  <div className="absolute -inset-4 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <motion.img 
+                    src={section.image} 
+                    alt={section.title}
+                    whileHover={{ scale: 1.02, rotate: section.imageSide === 'left' ? -1 : 1 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                    className="relative w-full h-auto max-h-[400px] md:max-h-[600px] object-contain rounded-[2.5rem] shadow-2xl border border-slate-200/50 dark:border-slate-800/50"
+                  />
+                </div>
+              </motion.div>
+
+              {/* Content Side */}
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="w-full md:w-1/2 space-y-6"
+              >
+                <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-slate-900 dark:text-white leading-[0.95]">
+                  {section.title}
+                </h2>
+                <div className="w-20 h-1.5 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full" />
+                <p className="text-lg md:text-xl text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                  {section.description}
+                </p>
+                <div className="pt-4">
+                  <Link 
+                    href={section.ctaLink || '/projects'} 
+                    className="group inline-flex items-center gap-3 text-indigo-600 dark:text-indigo-400 font-black uppercase tracking-widest text-sm hover:gap-5 transition-all"
+                  >
+                    <span>{section.ctaText || 'Explore Innovation'}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+      ))}
     </div>
   );
 }

@@ -16,7 +16,7 @@ export default function ProjectsPage() {
   });
 
   return (
-    <div className="flex flex-col gap-12">
+    <div className="max-w-[1600px] mx-auto px-6 md:px-12 flex flex-col gap-12">
       {/* Normalized Header */}
       <section className="border-b border-slate-200 dark:border-slate-800 pb-12">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white dark:bg-indigo-900/20 border border-slate-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 text-xs font-black uppercase tracking-widest mb-6 shadow-sm">

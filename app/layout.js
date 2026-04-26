@@ -54,7 +54,7 @@ export default function RootLayout({ children }) {
           </Suspense>
           <LoadingOverlay />
           <Navbar />
-        <main className="flex-grow w-full max-w-[1440px] mx-auto px-4 sm:px-6 md:px-12 pt-28 md:pt-32 pb-16 md:pb-20">
+        <main className="flex-grow w-full pt-28 md:pt-32 pb-16 md:pb-20">
           <ErrorBoundary>
             {children}
           </ErrorBoundary>
